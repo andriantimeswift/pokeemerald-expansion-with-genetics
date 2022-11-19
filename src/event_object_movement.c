@@ -1894,7 +1894,7 @@ static bool8 IsFollowerVisible(void) { // Determine whether follower *should* be
 }
 
 static bool8 SpeciesHasType(u16 species, u8 type) {
-  return gBaseStats[species].type1 == type || gBaseStats[species].type2 == type;
+  return gSpeciesInfo[species].type1 == type || gSpeciesInfo[species].type2 == type;
 }
 
 // Returns a random index according to a list of weights

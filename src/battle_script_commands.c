@@ -1354,8 +1354,8 @@ static void ModulateDmgByType(u8 multiplier)
 
 s32 GetTypeEffectiveness(struct Pokemon *mon, u8 moveType) {
     u16 species = GetMonData(mon, MON_DATA_SPECIES);
-    u8 type1 = gBaseStats[species].type1;
-    u8 type2 = gBaseStats[species].type2;
+    u8 type1 = gSpeciesInfo[species].type1;
+    u8 type2 = gSpeciesInfo[species].type2;
     s32 i = 0;
     u8 multiplier;
     s32 flags = 0;

@@ -2185,6 +2185,18 @@ void ZeroEnemyPartyMons(void)
         ZeroMonData(&gEnemyParty[i]);
 }
 
+u32 Mutate (u32 genome, u32 probability)
+{
+    u32 i;
+    u32 output = genome;
+    for (i = 0; i < 8; i++)
+    {
+        if (Random() < probability)
+            output ^= (1 << i);
+    }
+    return output;
+}
+
 void CreateMon(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 hasFixedPersonality, u32 fixedPersonality, u8 otIdType, u32 fixedOtId)
 {
     u32 mail;
@@ -2202,6 +2214,8 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     u32 personality;
     u32 value;
     u16 checksum;
+    u32 genes1 = Mutate(0, WILD_MUTATION_ODDS);
+    u32 genes2 = Mutate(0, WILD_MUTATION_ODDS);
 
     ZeroBoxMonData(boxMon);
 
@@ -2211,6 +2225,7 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
         personality = Random32();
 
     SetBoxMonData(boxMon, MON_DATA_PERSONALITY, &personality);
+
 
     // Determine original trainer ID
     if (otIdType == OT_ID_RANDOM_NO_SHINY)
@@ -2240,6 +2255,8 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     checksum = CalculateBoxMonChecksum(boxMon);
     SetBoxMonData(boxMon, MON_DATA_CHECKSUM, &checksum);
     EncryptBoxMon(boxMon);
+    SetBoxMonData(boxMon, MON_DATA_GENES1, &genes1);
+    SetBoxMonData(boxMon, MON_DATA_GENES2, &genes2);
     GetSpeciesName(speciesName, species);
     SetBoxMonData(boxMon, MON_DATA_NICKNAME, speciesName);
     SetBoxMonData(boxMon, MON_DATA_LANGUAGE, &gGameLanguage);
@@ -4037,6 +4054,14 @@ u32 GetBoxMonData(struct BoxPokemon *boxMon, s32 field, u8 *data)
                 | (substruct3->worldRibbon << 26);
         }
         break;
+    case MON_DATA_GENES1:
+        retVal = substruct0->genes1;
+        break;
+    case MON_DATA_GENES2:
+        retVal = substruct0->genes2;
+        break;
+    case MON_DATA_PHENOTYPE:
+        retVal = substruct0->genes1 | substruct0->genes2;
     default:
         break;
     }
@@ -4355,6 +4380,12 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
         substruct3->spDefenseIV = (ivs >> 25) & MAX_IV_MASK;
         break;
     }
+    case MON_DATA_GENES1:
+        SET8(substruct0->genes1);
+        break;
+    case MON_DATA_GENES2:
+        SET8(substruct0->genes2);
+        break;
     default:
         break;
     }
@@ -6451,6 +6482,7 @@ const u32 *GetMonFrontSpritePal(struct Pokemon *mon)
 const u32 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, u32 otId, u32 personality)
 {
     u32 shinyValue;
+    u32 phenotype;
 
     if (species > NUM_SPECIES)
         return gMonPaletteTable[SPECIES_NONE].data;

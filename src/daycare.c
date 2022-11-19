@@ -599,6 +599,27 @@ static void InheritIVs(struct Pokemon *egg, struct DayCare *daycare)
     }
 }
 
+static void InheritGenes(struct Pokemon *egg, struct DayCare *daycare)
+{
+    u8 n;
+    u8 babyGenes1;
+    u8 babyGenes2;
+
+    // Randomly select which of the first parent's genes are passed on
+    n = Random() >> 8;
+    babyGenes1 = (GetBoxMonData(&daycare->mons[0].mon, MON_DATA_GENES1) & n) | (GetBoxMonData(&daycare->mons[0].mon, MON_DATA_GENES2) & ~n);
+
+    // Randomly select which of the second parent's genes are passed on
+    n = Random() >> 8;
+    babyGenes2 = (GetBoxMonData(&daycare->mons[1].mon, MON_DATA_GENES1) & n) | (GetBoxMonData(&daycare->mons[1].mon, MON_DATA_GENES2) & ~n);
+
+    babyGenes1 = Mutate(babyGenes1, EGG_MUTATION_ODDS);
+    babyGenes2 = Mutate(babyGenes2, EGG_MUTATION_ODDS);
+
+    SetMonData(egg, MON_DATA_GENES1, &babyGenes1);
+    SetMonData(egg, MON_DATA_GENES2, &babyGenes2);
+}
+
 // Counts the number of egg moves a pokemon learns and stores the moves in
 // the given array.
 static u8 GetEggMoves(struct Pokemon *pokemon, u16 *eggMoves)
@@ -815,6 +836,7 @@ static void _GiveEggFromDaycare(struct DayCare *daycare)
     AlterEggSpeciesWithIncenseItem(&species, daycare);
     SetInitialEggData(&egg, species, daycare);
     InheritIVs(&egg, daycare);
+    InheritGenes(&egg, daycare);
     BuildEggMoveset(&egg, &daycare->mons[parentSlots[1]].mon, &daycare->mons[parentSlots[0]].mon);
 
     if (species == SPECIES_PICHU)

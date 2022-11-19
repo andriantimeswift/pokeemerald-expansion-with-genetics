@@ -2185,7 +2185,7 @@ void ZeroEnemyPartyMons(void)
         ZeroMonData(&gEnemyParty[i]);
 }
 
-u32 Mutate (u32 genome, u32 probability)
+u32 Mutate(u32 genome, u32 probability)
 {
     u32 i;
     u32 output = genome;
@@ -2195,6 +2195,18 @@ u32 Mutate (u32 genome, u32 probability)
             output ^= (1 << i);
     }
     return output;
+}
+
+u32 GetShinyPersonality(u32 otId)
+{
+    u32 shinyValue;
+    u32 personality;
+    do
+        {
+            // Choose random personalities until one results in a shiny Pokémon
+            personality = Random32();
+            shinyValue = GET_SHINY_VALUE(otId, personality);
+        } while (shinyValue >= SHINY_ODDS);
 }
 
 void CreateMon(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 hasFixedPersonality, u32 fixedPersonality, u8 otIdType, u32 fixedOtId)
@@ -2214,8 +2226,9 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     u32 personality;
     u32 value;
     u16 checksum;
-    u32 genes1 = Mutate(0, WILD_MUTATION_ODDS);
-    u32 genes2 = Mutate(0, WILD_MUTATION_ODDS);
+    u32 genes1 = Mutate(255, WILD_MUTATION_ODDS);
+    u32 genes2 = Mutate(255, WILD_MUTATION_ODDS);
+    DebugPrintf("Please work");
 
     ZeroBoxMonData(boxMon);
 
@@ -2223,8 +2236,9 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
         personality = fixedPersonality;
     else
         personality = Random32();
+        
 
-    SetBoxMonData(boxMon, MON_DATA_PERSONALITY, &personality);
+    
 
 
     // Determine original trainer ID
@@ -2241,6 +2255,11 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     else if (otIdType == OT_ID_PRESET)
     {
         value = fixedOtId;
+        if(IsShinyPhenotype(genes1 & genes2))
+        {
+            personality = GetShinyPersonality(value);
+        }
+        
     }
     else // Player is the OT
     {
@@ -2248,7 +2267,12 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
               | (gSaveBlock2Ptr->playerTrainerId[1] << 8)
               | (gSaveBlock2Ptr->playerTrainerId[2] << 16)
               | (gSaveBlock2Ptr->playerTrainerId[3] << 24);
+        if(IsShinyPhenotype(genes1 & genes2))
+        {
+            personality = GetShinyPersonality(value);
+        }
     }
+    SetBoxMonData(boxMon, MON_DATA_PERSONALITY, &personality);
 
     SetBoxMonData(boxMon, MON_DATA_OT_ID, &value);
 
@@ -4061,7 +4085,7 @@ u32 GetBoxMonData(struct BoxPokemon *boxMon, s32 field, u8 *data)
         retVal = substruct0->genes2;
         break;
     case MON_DATA_PHENOTYPE:
-        retVal = substruct0->genes1 | substruct0->genes2;
+        retVal = substruct0->genes1 & substruct0->genes2;
     default:
         break;
     }
@@ -6672,11 +6696,19 @@ void SetWildMonHeldItem(void)
     }
 }
 
+bool8 IsShinyPhenotype(u8 phenotype)
+{
+    bool8 isShiny = (phenotype >> SHINY_GENE_INDEX) & 1;
+    return isShiny;
+}
+
 bool8 IsMonShiny(struct Pokemon *mon)
 {
-    u32 otId = GetMonData(mon, MON_DATA_OT_ID, 0);
-    u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, 0);
-    return IsShinyOtIdPersonality(otId, personality);
+    // u32 otId = GetMonData(mon, MON_DATA_OT_ID, 0);
+    // u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, 0);
+    // return IsShinyOtIdPersonality(otId, personality);
+    return IsShinyPhenotype(GetMonData(mon, MON_DATA_PHENOTYPE, 0));
+
 }
 
 bool8 IsShinyOtIdPersonality(u32 otId, u32 personality)

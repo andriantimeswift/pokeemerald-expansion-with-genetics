@@ -93,7 +93,7 @@
 // Shiny odds
 #define SHINY_ODDS 8 // Actual probability is SHINY_ODDS/65536; Depricated in favor of genetics
 
-// Genetics odds
+// Genetics mutation odds
 #define WILD_MUTATION_ODDS 100 // Actual probability is STAT_MUTATION_ODDS/65536
 #define EGG_MUTATION_ODDS 100 // Actual probability is STAT_MUTATION_ODDS/65536
 

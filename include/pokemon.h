@@ -99,6 +99,15 @@ enum {
     MON_DATA_PHENOTYPE,
 };
 
+enum {
+    SHINY_GENE_INDEX,
+    ALBINO_GENE_INDEX,
+    MELANISTIC_GENE_INDEX,
+    ALT_PATTERN_GENE_INDEX,
+    ALT_PATTERN_ALT_COLOR_GENE_INDEX,
+    SPECIAL_TRAIT_GENE_INDEX,
+};
+
 struct PokemonSubstruct0
 {
     u16 species;

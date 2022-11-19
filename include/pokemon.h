@@ -396,6 +396,7 @@ void ZeroPlayerPartyMons(void);
 void ZeroEnemyPartyMons(void);
 u32 Mutate (u32 genome, u32 probability);
 u32 GetShinyPersonality(u32 otId);
+u32 GetNonShinyPersonality(u32 otId);
 void CreateMon(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 hasFixedPersonality, u32 fixedPersonality, u8 otIdType, u32 fixedOtId);
 void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, u8 hasFixedPersonality, u32 fixedPersonality, u8 otIdType, u32 fixedOtId);
 void CreateMonWithNature(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 nature);

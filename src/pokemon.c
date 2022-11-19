@@ -2202,11 +2202,24 @@ u32 GetShinyPersonality(u32 otId)
     u32 shinyValue;
     u32 personality;
     do
-        {
-            // Choose random personalities until one results in a shiny Pokémon
-            personality = Random32();
-            shinyValue = GET_SHINY_VALUE(otId, personality);
-        } while (shinyValue >= SHINY_ODDS);
+    {
+        // Choose random personalities until one results in a shiny Pokémon
+        personality = Random32();
+        shinyValue = GET_SHINY_VALUE(otId, personality);
+    } while (shinyValue >= SHINY_ODDS);
+    return personality;
+}
+u32 GetNonShinyPersonality(u32 otId)
+{
+    u32 shinyValue;
+    u32 personality;
+    do
+    {
+        // Choose random personalities until one results in a non-shiny Pokémon
+        personality = Random32();
+        shinyValue = GET_SHINY_VALUE(otId, personality);
+    } while (shinyValue < SHINY_ODDS);
+    return personality;
 }
 
 void CreateMon(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 hasFixedPersonality, u32 fixedPersonality, u8 otIdType, u32 fixedOtId)
@@ -2259,6 +2272,10 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
         {
             personality = GetShinyPersonality(value);
         }
+        else
+        {
+            personality = GetNonShinyPersonality(value);
+        }
         
     }
     else // Player is the OT
@@ -2270,6 +2287,10 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
         if(IsShinyPhenotype(genes1 & genes2))
         {
             personality = GetShinyPersonality(value);
+        }
+        else
+        {
+            personality = GetNonShinyPersonality(value);
         }
     }
     SetBoxMonData(boxMon, MON_DATA_PERSONALITY, &personality);

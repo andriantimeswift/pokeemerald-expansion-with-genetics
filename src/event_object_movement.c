@@ -1473,10 +1473,8 @@ static u8 TrySetupObjectEventSprite(struct ObjectEventTemplate *objectEventTempl
     {
         paletteSlot -= 16;
         _PatchObjectPalette(graphicsInfo->paletteTag, paletteSlot);
-=======
     if (spriteTemplate->paletteTag != 0xffff) {
         LoadObjectEventPalette(spriteTemplate->paletteTag);
->>>>>>> 70d95eed695541520c9a79478f49ffe86e806035
     }
 
     if (objectEvent->movementType == MOVEMENT_TYPE_INVISIBLE)
@@ -1699,6 +1697,7 @@ u8 CreateVirtualObject(u8 graphicsId, u8 virtualObjId, s16 x, s16 y, u8 elevatio
         sprite->coordOffsetEnabled = TRUE;
         sprite->sVirtualObjId = virtualObjId;
         sprite->sVirtualObjElev = elevation;
+
         if (graphicsInfo->paletteSlot == PALSLOT_NPC_SPECIAL)
             LoadSpecialObjectReflectionPalette(graphicsInfo->paletteTag, graphicsInfo->paletteSlot);
         else if (graphicsInfo->paletteSlot >= 16)

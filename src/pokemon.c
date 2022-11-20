@@ -4106,8 +4106,9 @@ u32 GetBoxMonData(struct BoxPokemon *boxMon, s32 field, u8 *data)
         break;
     case MON_DATA_PHENOTYPE:
         retVal = substruct0->genes1 & substruct0->genes2;
+        break;
     case MON_DATA_NATURE:
-        return boxMon->personality % 25;
+        retVal = boxMon->personality % 25;
         break;
     default:
         break;

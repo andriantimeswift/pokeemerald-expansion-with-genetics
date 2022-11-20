@@ -2239,9 +2239,9 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     u32 personality;
     u32 value;
     u16 checksum;
-    u32 genes1 = Mutate(0, WILD_MUTATION_ODDS);
-    u32 genes2 = Mutate(0, WILD_MUTATION_ODDS);
-    
+    u32 genes1 = Mutate(255, WILD_MUTATION_ODDS);
+    u32 genes2 = Mutate(255, WILD_MUTATION_ODDS);
+    DebugPrintf("Please work");
 
     ZeroBoxMonData(boxMon);
 

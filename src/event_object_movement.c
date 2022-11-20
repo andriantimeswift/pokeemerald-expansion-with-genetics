@@ -1457,7 +1457,9 @@ static u8 TrySetupObjectEventSprite(struct ObjectEventTemplate *objectEventTempl
 
     objectEvent = &gObjectEvents[objectEventId];
     graphicsInfo = GetObjectEventGraphicsInfo(objectEvent->graphicsId);
-<<<<<<< HEAD
+    if (spriteTemplate->paletteTag != 0xffff) {
+        LoadObjectEventPalette(spriteTemplate->paletteTag);
+    }
     paletteSlot = graphicsInfo->paletteSlot;
     if (paletteSlot == PALSLOT_PLAYER)
     {
@@ -1697,13 +1699,10 @@ u8 CreateVirtualObject(u8 graphicsId, u8 virtualObjId, s16 x, s16 y, u8 elevatio
         sprite->coordOffsetEnabled = TRUE;
         sprite->sVirtualObjId = virtualObjId;
         sprite->sVirtualObjElev = elevation;
-<<<<<<< HEAD
         if (graphicsInfo->paletteSlot == PALSLOT_NPC_SPECIAL)
             LoadSpecialObjectReflectionPalette(graphicsInfo->paletteTag, graphicsInfo->paletteSlot);
         else if (graphicsInfo->paletteSlot >= 16)
             _PatchObjectPalette(graphicsInfo->paletteTag, graphicsInfo->paletteSlot | 0xf0);
-=======
->>>>>>> 70d95eed695541520c9a79478f49ffe86e806035
 
         if (subspriteTables != NULL)
         {
@@ -2284,7 +2283,13 @@ static void SpawnObjectEventOnReturnToField(u8 objectEventId, s16 x, s16 y)
     spriteFrameImage.size = graphicsInfo->size;
     CopyObjectGraphicsInfoToSpriteTemplate_WithMovementType(objectEvent->graphicsId, objectEvent->movementType, &spriteTemplate, &subspriteTables);
     spriteTemplate.images = &spriteFrameImage;
-<<<<<<< HEAD
+
+    if (spriteTemplate.paletteTag != TAG_NONE) {
+      LoadObjectEventPalette(spriteTemplate.paletteTag);
+    }
+    if (spriteTemplate.paletteTag != TAG_NONE) {
+      LoadObjectEventPalette(spriteTemplate.paletteTag);
+    }
 
     *(u16 *)&spriteTemplate.paletteTag = TAG_NONE;
     paletteSlot = graphicsInfo->paletteSlot;
@@ -2303,11 +2308,7 @@ static void SpawnObjectEventOnReturnToField(u8 objectEventId, s16 x, s16 y)
     }
     *(u16 *)&spriteTemplate.paletteTag = TAG_NONE;
 
-=======
-    if (spriteTemplate.paletteTag != TAG_NONE) {
-      LoadObjectEventPalette(spriteTemplate.paletteTag);
-    }
->>>>>>> 70d95eed695541520c9a79478f49ffe86e806035
+
     i = CreateSprite(&spriteTemplate, 0, 0, 0);
     if (i != MAX_SPRITES)
     {
@@ -2404,7 +2405,6 @@ static void ObjectEventSetGraphics(struct ObjectEvent *objectEvent, const struct
 
 void ObjectEventSetGraphicsId(struct ObjectEvent *objectEvent, u8 graphicsId)
 {
-<<<<<<< HEAD
     const struct ObjectEventGraphicsInfo *graphicsInfo;
     struct Sprite *sprite;
     u8 paletteSlot;
@@ -2432,8 +2432,7 @@ void ObjectEventSetGraphicsId(struct ObjectEvent *objectEvent, u8 graphicsId)
     sprite->subspriteTables = graphicsInfo->subspriteTables;
     sprite->oam.paletteNum = paletteSlot;
     objectEvent->inanimate = graphicsInfo->inanimate;
-=======
->>>>>>> 70d95eed695541520c9a79478f49ffe86e806035
+    
     objectEvent->graphicsId = graphicsId;
     ObjectEventSetGraphics(objectEvent, GetObjectEventGraphicsInfo(graphicsId));
     objectEvent->graphicsId = graphicsId;

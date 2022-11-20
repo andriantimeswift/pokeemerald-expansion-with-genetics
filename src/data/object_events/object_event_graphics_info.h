@@ -4650,6 +4650,6 @@ const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_HoOh = {
     .oam = &gObjectEventBaseOam_32x32,
     .subspriteTables = sOamTables_32x32,
     .anims = sAnimTable_HoOh,
-    .images = sPicTable_HoOh,
+    .images = sPicTable_Ho_oh,
     .affineAnims = gDummySpriteAffineAnimTable,
 };

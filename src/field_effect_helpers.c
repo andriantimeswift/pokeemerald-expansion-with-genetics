@@ -157,6 +157,16 @@ static void LoadObjectRegularReflectionPalette(struct ObjectEvent *objectEvent, 
       }
       paletteNum = LoadSpritePalette(&filteredPalette);
       UpdateSpritePaletteWithWeather(paletteNum);
+    graphicsInfo = GetObjectEventGraphicsInfo(objectEvent->graphicsId);
+    if (graphicsInfo->reflectionPaletteTag != OBJ_EVENT_PAL_TAG_NONE)
+    {
+        if (graphicsInfo->paletteSlot == PALSLOT_PLAYER)
+            LoadPlayerObjectReflectionPalette(graphicsInfo->paletteTag, paletteIndex);
+        else if (graphicsInfo->paletteSlot == PALSLOT_NPC_SPECIAL)
+            LoadSpecialObjectReflectionPalette(graphicsInfo->paletteTag, paletteIndex);
+        else
+            PatchObjectPalette(GetObjectPaletteTag(paletteIndex), paletteIndex);
+        UpdateSpritePaletteWithWeather(paletteIndex);
     }
     sprite->oam.paletteNum = paletteNum;
     sprite->oam.objMode = 1; // Alpha blending

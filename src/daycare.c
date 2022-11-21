@@ -80,7 +80,7 @@ static const struct ListMenuTemplate sDaycareListMenuLevelTemplate =
     .itemVerticalPadding = 0,
     .scrollMultiple = LIST_NO_MULTIPLE_SCROLL,
     .fontId = FONT_NORMAL,
-    .cursorKind = CURSOR_BLACK_ARROW
+    .cursorKind = 0
 };
 
 static const u8 *const sCompatibilityMessages[] =

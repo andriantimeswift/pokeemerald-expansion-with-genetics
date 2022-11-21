@@ -80,7 +80,7 @@ static const struct ListMenuTemplate sDaycareListMenuLevelTemplate =
     .itemVerticalPadding = 0,
     .scrollMultiple = LIST_NO_MULTIPLE_SCROLL,
     .fontId = FONT_NORMAL,
-    .cursorKind = 0
+    .cursorKind = CURSOR_BLACK_ARROW
 };
 
 static const u8 *const sCompatibilityMessages[] =
@@ -609,6 +609,27 @@ static void InheritIVs(struct Pokemon *egg, struct DayCare *daycare)
     }
 }
 
+static void InheritGenes(struct Pokemon *egg, struct DayCare *daycare)
+{
+    u8 n;
+    u8 babyGenes1;
+    u8 babyGenes2;
+
+    // Randomly select which of the first parent's genes are passed on
+    n = Random() >> 8;
+    babyGenes1 = (GetBoxMonData(&daycare->mons[0].mon, MON_DATA_GENES1) & n) | (GetBoxMonData(&daycare->mons[0].mon, MON_DATA_GENES2) & ~n);
+
+    // Randomly select which of the second parent's genes are passed on
+    n = Random() >> 8;
+    babyGenes2 = (GetBoxMonData(&daycare->mons[1].mon, MON_DATA_GENES1) & n) | (GetBoxMonData(&daycare->mons[1].mon, MON_DATA_GENES2) & ~n);
+
+    babyGenes1 = Mutate(babyGenes1, EGG_MUTATION_ODDS);
+    babyGenes2 = Mutate(babyGenes2, EGG_MUTATION_ODDS);
+
+    SetMonData(egg, MON_DATA_GENES1, &babyGenes1);
+    SetMonData(egg, MON_DATA_GENES2, &babyGenes2);
+}
+
 // Counts the number of egg moves a pokemon learns and stores the moves in
 // the given array.
 static u8 GetEggMoves(struct Pokemon *pokemon, u16 *eggMoves)
@@ -859,6 +880,7 @@ static void _GiveEggFromDaycare(struct DayCare *daycare)
     AlterEggSpeciesWithIncenseItem(&species, daycare);
     SetInitialEggData(&egg, species, daycare);
     InheritIVs(&egg, daycare);
+    InheritGenes(&egg, daycare);
     BuildEggMoveset(&egg, &daycare->mons[parentSlots[1]].mon, &daycare->mons[parentSlots[0]].mon);
 
     if (species == SPECIES_PICHU)
@@ -886,7 +908,7 @@ void CreateEgg(struct Pokemon *mon, u16 species, bool8 setHotSpringsLocation)
     language = LANGUAGE_JAPANESE;
     SetMonData(mon, MON_DATA_POKEBALL, &ball);
     SetMonData(mon, MON_DATA_NICKNAME, sJapaneseEggNickname);
-    SetMonData(mon, MON_DATA_FRIENDSHIP, &gBaseStats[species].eggCycles);
+    SetMonData(mon, MON_DATA_FRIENDSHIP, &gSpeciesInfo[species].eggCycles);
     SetMonData(mon, MON_DATA_MET_LEVEL, &metLevel);
     SetMonData(mon, MON_DATA_LANGUAGE, &language);
     if (setHotSpringsLocation)
@@ -913,7 +935,7 @@ static void SetInitialEggData(struct Pokemon *mon, u16 species, struct DayCare *
     language = LANGUAGE_JAPANESE;
     SetMonData(mon, MON_DATA_POKEBALL, &ball);
     SetMonData(mon, MON_DATA_NICKNAME, sJapaneseEggNickname);
-    SetMonData(mon, MON_DATA_FRIENDSHIP, &gBaseStats[species].eggCycles);
+    SetMonData(mon, MON_DATA_FRIENDSHIP, &gSpeciesInfo[species].eggCycles);
     SetMonData(mon, MON_DATA_MET_LEVEL, &metLevel);
     SetMonData(mon, MON_DATA_LANGUAGE, &language);
 }
@@ -1075,8 +1097,8 @@ static u8 GetDaycareCompatibilityScore(struct DayCare *daycare)
         trainerIds[i] = GetBoxMonData(&daycare->mons[i].mon, MON_DATA_OT_ID);
         personality = GetBoxMonData(&daycare->mons[i].mon, MON_DATA_PERSONALITY);
         genders[i] = GetGenderFromSpeciesAndPersonality(species[i], personality);
-        eggGroups[i][0] = gBaseStats[species[i]].eggGroup1;
-        eggGroups[i][1] = gBaseStats[species[i]].eggGroup2;
+        eggGroups[i][0] = gSpeciesInfo[species[i]].eggGroup1;
+        eggGroups[i][1] = gSpeciesInfo[species[i]].eggGroup2;
     }
 
     // check unbreedable egg group

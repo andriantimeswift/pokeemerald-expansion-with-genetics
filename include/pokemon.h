@@ -100,10 +100,24 @@ enum {
     MON_DATA_SPEED2,
     MON_DATA_SPATK2,
     MON_DATA_SPDEF2,
+    MON_DATA_GENES1,
+    MON_DATA_GENES2,
+    MON_DATA_PHENOTYPE,
+    MON_DATA_NATURE,
+};
+
+enum{
+    SHINY_GENE_INDEX,
+    ALBINO_GENE_INDEX,
+    MELANISTIC_GENE_INDEX,
+    ALT_PATTERN_GENE_INDEX,
+    ALT_PATTERN_ALT_COLOR_GENE_INDEX,
+    SPECIAL_TRAIT_GENE_INDEX,
 };
 
 struct PokemonSubstruct0
 {
+<<<<<<< HEAD
     /*0x00*/ u16 species;
     /*0x02*/ u16 heldItem;
     /*0x04*/ u32 experience;
@@ -112,6 +126,16 @@ struct PokemonSubstruct0
     /*0x0A*/ u16 pokeball:5; //31 balls
              u16 filler:11;
 }; /* size = 12 */
+=======
+    u16 species;
+    u16 heldItem;
+    u32 experience;
+    u8 ppBonuses;
+    u8 friendship;
+    u8 genes1; //genes from first parent
+    u8 genes2; //genes from second parent
+};
+>>>>>>> 00bffc7e8786277ae497c0f3dad14e3610136c84
 
 struct PokemonSubstruct1
 {
@@ -294,7 +318,7 @@ struct BattlePokemon
     /*0x55*/ u32 otId;
 };
 
-struct BaseStats
+struct SpeciesInfo
 {
  /* 0x00 */ u8 baseHP;
  /* 0x01 */ u8 baseAttack;
@@ -396,7 +420,7 @@ extern struct SpriteTemplate gMultiuseSpriteTemplate;
 extern const struct BattleMove gBattleMoves[];
 extern const u8 gFacilityClassToPicIndex[];
 extern const u8 gFacilityClassToTrainerClass[];
-extern const struct BaseStats gBaseStats[];
+extern const struct SpeciesInfo gSpeciesInfo[];
 extern const u8 *const gItemEffectTable[];
 extern const u32 gExperienceTables[][MAX_LEVEL + 1];
 extern const struct LevelUpMove *const gLevelUpLearnsets[];
@@ -415,6 +439,9 @@ void ZeroBoxMonData(struct BoxPokemon *boxMon);
 void ZeroMonData(struct Pokemon *mon);
 void ZeroPlayerPartyMons(void);
 void ZeroEnemyPartyMons(void);
+u32 Mutate (u32 genome, u32 probability);
+u32 GetShinyPersonality(u32 otId);
+u32 GetNonShinyPersonality(u32 otId);
 void CreateMon(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 hasFixedPersonality, u32 fixedPersonality, u8 otIdType, u32 fixedOtId);
 void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, u8 hasFixedPersonality, u32 fixedPersonality, u8 otIdType, u32 fixedOtId);
 void CreateMonWithNature(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 nature);
@@ -540,6 +567,7 @@ void MonRestorePP(struct Pokemon *mon);
 void BoxMonRestorePP(struct BoxPokemon *boxMon);
 void SetMonPreventsSwitchingString(void);
 void SetWildMonHeldItem(void);
+bool8 IsShinyPhenotype(u8 phenotype);
 bool8 IsMonShiny(struct Pokemon *mon);
 bool8 IsShinyOtIdPersonality(u32 otId, u32 personality);
 const u8 *GetTrainerPartnerName(void);

@@ -117,16 +117,6 @@ enum{
 
 struct PokemonSubstruct0
 {
-<<<<<<< HEAD
-    /*0x00*/ u16 species;
-    /*0x02*/ u16 heldItem;
-    /*0x04*/ u32 experience;
-    /*0x08*/ u8 ppBonuses;
-    /*0x09*/ u8 friendship;
-    /*0x0A*/ u16 pokeball:5; //31 balls
-             u16 filler:11;
-}; /* size = 12 */
-=======
     u16 species;
     u16 heldItem;
     u32 experience;
@@ -135,7 +125,6 @@ struct PokemonSubstruct0
     u8 genes1; //genes from first parent
     u8 genes2; //genes from second parent
 };
->>>>>>> 00bffc7e8786277ae497c0f3dad14e3610136c84
 
 struct PokemonSubstruct1
 {
@@ -318,7 +307,7 @@ struct BattlePokemon
     /*0x55*/ u32 otId;
 };
 
-struct SpeciesInfo
+struct BaseStats
 {
  /* 0x00 */ u8 baseHP;
  /* 0x01 */ u8 baseAttack;
@@ -420,7 +409,7 @@ extern struct SpriteTemplate gMultiuseSpriteTemplate;
 extern const struct BattleMove gBattleMoves[];
 extern const u8 gFacilityClassToPicIndex[];
 extern const u8 gFacilityClassToTrainerClass[];
-extern const struct SpeciesInfo gSpeciesInfo[];
+extern const struct BaseStats gBaseStats[];
 extern const u8 *const gItemEffectTable[];
 extern const u32 gExperienceTables[][MAX_LEVEL + 1];
 extern const struct LevelUpMove *const gLevelUpLearnsets[];

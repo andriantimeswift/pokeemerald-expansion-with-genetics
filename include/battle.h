@@ -240,7 +240,7 @@ struct WishFutureKnock
     u8 wishCounter[MAX_BATTLERS_COUNT];
     u8 wishPartyId[MAX_BATTLERS_COUNT];
     u8 weatherDuration;
-    u8 knockedOffMons[NUM_BATTLE_SIDES]; // Each battler is represented by a bit.
+    u8 knockedOffMons[2]; // Each battler is represented by a bit. The array entry is dependent on the battler's side.
 };
 
 struct AI_SavedBattleMon
@@ -451,9 +451,9 @@ struct BattleTv_Mon
 
 struct BattleTv
 {
-    struct BattleTv_Mon mon[NUM_BATTLE_SIDES][PARTY_SIZE];
-    struct BattleTv_Position pos[NUM_BATTLE_SIDES][2]; // [side][flank]
-    struct BattleTv_Side side[NUM_BATTLE_SIDES];
+    struct BattleTv_Mon mon[2][PARTY_SIZE]; // [side][partyId]
+    struct BattleTv_Position pos[2][2]; // [side][flank]
+    struct BattleTv_Side side[2]; // [side]
 };
 
 struct BattleTvMovePoints
@@ -569,13 +569,8 @@ struct BattleStruct
     u8 wallyMovesState;
     u8 wallyWaitFrames;
     u8 wallyMoveFrames;
-<<<<<<< HEAD
     u16 lastTakenMove[MAX_BATTLERS_COUNT]; // Last move that a battler was hit with.
     u16 hpOnSwitchout[2];
-=======
-    u8 lastTakenMove[MAX_BATTLERS_COUNT * 2 * 2]; // Last move that a battler was hit with. This field seems to erroneously take 16 bytes instead of 8.
-    u16 hpOnSwitchout[NUM_BATTLE_SIDES];
->>>>>>> 00bffc7e8786277ae497c0f3dad14e3610136c84
     u32 savedBattleTypeFlags;
     u16 abilityPreventingSwitchout;
     u8 hpScale;
@@ -921,13 +916,8 @@ extern u16 gMoveResultFlags;
 extern u32 gHitMarker;
 extern u8 gTakenDmgByBattler[MAX_BATTLERS_COUNT];
 extern u8 gUnusedFirstBattleVar2;
-<<<<<<< HEAD
 extern u32 gSideStatuses[2];
 extern struct SideTimer gSideTimers[2];
-=======
-extern u16 gSideStatuses[NUM_BATTLE_SIDES];
-extern struct SideTimer gSideTimers[NUM_BATTLE_SIDES];
->>>>>>> 00bffc7e8786277ae497c0f3dad14e3610136c84
 extern u32 gStatuses3[MAX_BATTLERS_COUNT];
 extern u32 gStatuses4[MAX_BATTLERS_COUNT];
 extern struct DisableStruct gDisableStructs[MAX_BATTLERS_COUNT];

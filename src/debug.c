@@ -2638,6 +2638,8 @@ static void DebugAction_Give_Pokemon_ComplexCreateMon(u8 taskId) //https://githu
     u8 isShiny      = sDebugMonData->isShiny; //Shiny: no 0, yes 1
     u8 nature       = sDebugMonData->mon_natureId;
     u8 abilityNum   = sDebugMonData->mon_abilityNum;
+    u8 genes1 = 0;
+    u8 genes2 = 0;
     moves[0]        = sDebugMonData->mon_move_0;
     moves[1]        = sDebugMonData->mon_move_1;
     moves[2]        = sDebugMonData->mon_move_2;
@@ -2661,17 +2663,18 @@ static void DebugAction_Give_Pokemon_ComplexCreateMon(u8 taskId) //https://githu
             | (gSaveBlock2Ptr->playerTrainerId[1] << 8)
             | (gSaveBlock2Ptr->playerTrainerId[2] << 16)
             | (gSaveBlock2Ptr->playerTrainerId[3] << 24);
-
+        genes1 |= 1 << SHINY_GENE_INDEX;
+        genes2 |= 1 << SHINY_GENE_INDEX;
         do
         {
             personality = Random32();
             personality = ((((Random() % 8) ^ (HIHALF(otid) ^ LOHALF(otid))) ^ LOHALF(personality)) << 16) | LOHALF(personality);
         } while (nature != GetNatureFromPersonality(personality));
 
-        CreateMon(&mon, species, level, 32, 1, personality, OT_ID_PRESET, otid);
+        CreateMon(&mon, species, level, 32, 1, personality, OT_ID_PRESET, otid, genes1, genes2);
     }
     else
-        CreateMonWithNature(&mon, species, level, 32, nature);
+        CreateMonWithNature(&mon, species, level, 32, nature, genes1, genes2);
 
     //IVs
     for (i = 0; i < NUM_STATS; i++)
@@ -2771,7 +2774,7 @@ static void DebugAction_Give_FillPC(u8 taskId) //Credit: Sierraffinity
                  personality,
                  0,
                  OT_ID_PLAYER_ID,
-                 0);
+                 0, 0, 0);
 
     for (boxId = 0; boxId < TOTAL_BOXES_COUNT; boxId++)
     {

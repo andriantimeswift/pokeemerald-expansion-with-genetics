@@ -746,6 +746,8 @@ struct DayCare
 {
     struct DaycareMon mons[DAYCARE_MON_COUNT];
     u32 offspringPersonality;
+    u8 offspringGenes1;
+    u8 offspringGenes2;
     u8 stepCounter;
 };
 

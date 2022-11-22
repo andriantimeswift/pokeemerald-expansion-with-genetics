@@ -466,10 +466,31 @@ static s32 GetParentToInheritNature(struct DayCare *daycare)
     return parent;
 }
 
+static void InheritGenes(struct DayCare *daycare)
+{
+    u8 n;
+    u8 babyGenes1;
+    u8 babyGenes2;
+
+    DebugPrintf("Parent1 IsShiny? %d", IsShinyPhenotype(GetBoxMonData(&daycare->mons[0].mon, MON_DATA_PHENOTYPE)));
+    DebugPrintf("Parent2 IsShiny? %d", IsShinyPhenotype(GetBoxMonData(&daycare->mons[1].mon, MON_DATA_PHENOTYPE)));
+    // Randomly select which of the first parent's genes are passed on
+    n = Random() >> 8;
+    babyGenes1 = (GetBoxMonData(&daycare->mons[0].mon, MON_DATA_GENES1) & n) | (GetBoxMonData(&daycare->mons[0].mon, MON_DATA_GENES2) & ~n);
+
+    // Randomly select which of the second parent's genes are passed on
+    n = Random() >> 8;
+    babyGenes2 = (GetBoxMonData(&daycare->mons[1].mon, MON_DATA_GENES1) & n) | (GetBoxMonData(&daycare->mons[1].mon, MON_DATA_GENES2) & ~n);
+
+    daycare->offspringGenes1 = Mutate(babyGenes1, EGG_MUTATION_ODDS);
+    daycare->offspringGenes2 = Mutate(babyGenes2, EGG_MUTATION_ODDS);
+}
+
 static void _TriggerPendingDaycareEgg(struct DayCare *daycare)
 {
     s32 parent;
     s32 natureTries = 0;
+    InheritGenes(daycare);
 
     SeedRng2(gMain.vblankCounter2);
     parent = GetParentToInheritNature(daycare);
@@ -609,27 +630,6 @@ static void InheritIVs(struct Pokemon *egg, struct DayCare *daycare)
                 break;
         }
     }
-}
-
-static void InheritGenes(struct Pokemon *egg, struct DayCare *daycare)
-{
-    u8 n;
-    u8 babyGenes1;
-    u8 babyGenes2;
-
-    // Randomly select which of the first parent's genes are passed on
-    n = Random() >> 8;
-    babyGenes1 = (GetBoxMonData(&daycare->mons[0].mon, MON_DATA_GENES1) & n) | (GetBoxMonData(&daycare->mons[0].mon, MON_DATA_GENES2) & ~n);
-
-    // Randomly select which of the second parent's genes are passed on
-    n = Random() >> 8;
-    babyGenes2 = (GetBoxMonData(&daycare->mons[1].mon, MON_DATA_GENES1) & n) | (GetBoxMonData(&daycare->mons[1].mon, MON_DATA_GENES2) & ~n);
-
-    babyGenes1 = Mutate(babyGenes1, EGG_MUTATION_ODDS);
-    babyGenes2 = Mutate(babyGenes2, EGG_MUTATION_ODDS);
-
-    SetMonData(egg, MON_DATA_GENES1, &babyGenes1);
-    SetMonData(egg, MON_DATA_GENES2, &babyGenes2);
 }
 
 // Counts the number of egg moves a pokemon learns and stores the moves in
@@ -882,7 +882,6 @@ static void _GiveEggFromDaycare(struct DayCare *daycare)
     AlterEggSpeciesWithIncenseItem(&species, daycare);
     SetInitialEggData(&egg, species, daycare);
     InheritIVs(&egg, daycare);
-    InheritGenes(&egg, daycare);
     BuildEggMoveset(&egg, &daycare->mons[parentSlots[1]].mon, &daycare->mons[parentSlots[0]].mon);
 
     if (species == SPECIES_PICHU)
@@ -929,10 +928,12 @@ static void SetInitialEggData(struct Pokemon *mon, u16 species, struct DayCare *
     u16 ball;
     u8 metLevel;
     u8 language;
+    u32 nature = GetNatureFromPersonality(personality);
 
     personality = daycare->offspringPersonality;
-    
-    CreateMon(mon, species, EGG_HATCH_LEVEL, USE_RANDOM_IVS, TRUE, personality, OT_ID_PLAYER_ID, 0, daycare->offspringGenes1, daycare->offspringGenes2);
+    DebugPrintf("Genes1: %d", daycare->offspringGenes1);
+    DebugPrintf("Genes2: %d", daycare->offspringGenes2);
+    CreateMonWithNature(mon, species, EGG_HATCH_LEVEL, USE_RANDOM_IVS, nature, daycare->offspringGenes1, daycare->offspringGenes1);
     metLevel = 0;
     ball = ITEM_POKE_BALL;
     language = LANGUAGE_JAPANESE;

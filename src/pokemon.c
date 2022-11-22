@@ -3663,11 +3663,10 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
 void CreateMonWithNature(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 nature, u8 genes1, u8 genes2)
 {
     u32 personality;
-    u32 otId = gSaveBlock2Ptr->playerTrainerId[0]
+    u32 otId= gSaveBlock2Ptr->playerTrainerId[0]
               | (gSaveBlock2Ptr->playerTrainerId[1] << 8)
               | (gSaveBlock2Ptr->playerTrainerId[2] << 16)
               | (gSaveBlock2Ptr->playerTrainerId[3] << 24);
-
     do
     {
         if(IsShinyPhenotype(genes1 & genes2))
@@ -3746,7 +3745,11 @@ void CreateMaleMon(struct Pokemon *mon, u16 species, u8 level)
 void CreateMonWithIVsPersonality(struct Pokemon *mon, u16 species, u8 level, u32 ivs, u32 personality, u8 genes1, u8 genes2)
 {
     u8 genes = 0;
-    if(IsShinyOtIdPersonality(OT_ID_PLAYER_ID, personality))
+    u32 value = gSaveBlock2Ptr->playerTrainerId[0]
+              | (gSaveBlock2Ptr->playerTrainerId[1] << 8)
+              | (gSaveBlock2Ptr->playerTrainerId[2] << 16)
+              | (gSaveBlock2Ptr->playerTrainerId[3] << 24);
+    if(IsShinyOtIdPersonality(value, personality))
     {
         genes |= 1 << SHINY_GENE_INDEX;
     }
@@ -5105,6 +5108,15 @@ u32 GetBoxMonData(struct BoxPokemon *boxMon, s32 field, u8 *data)
                 | (substruct3->worldRibbon << 26);
         }
         break;
+    case MON_DATA_GENES1:
+        retVal = substruct0->genes1;
+        break;
+    case MON_DATA_GENES2:
+        retVal = substruct0->genes2;  
+        break;  
+    case MON_DATA_PHENOTYPE:
+        retVal = substruct0->genes1 & substruct0->genes2;  
+        break;
     default:
         break;
     }
@@ -5411,6 +5423,12 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
         break;
     case MON_DATA_EVENT_LEGAL:
         SET8(substruct3->eventLegal);
+        break;
+    case MON_DATA_GENES1:
+        SET8(substruct0->genes1);
+        break;
+    case MON_DATA_GENES2:
+        SET8(substruct0->genes2);
         break;
     case MON_DATA_IVS:
     {

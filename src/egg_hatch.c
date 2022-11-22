@@ -334,11 +334,15 @@ static void CreateHatchedMon(struct Pokemon *egg, struct Pokemon *temp)
     // The language is initially read from the Egg but is later overwritten below
     language = GetMonData(egg, MON_DATA_LANGUAGE);
     gameMet = GetMonData(egg, MON_DATA_MET_GAME);
-markings = GetMonData(egg, MON_DATA_MARKINGS);
+    markings = GetMonData(egg, MON_DATA_MARKINGS);
     pokerus = GetMonData(egg, MON_DATA_POKERUS);
     isEventLegal = GetMonData(egg, MON_DATA_EVENT_LEGAL);
 
+    DebugPrintf("Should be shiny?: %d", IsShinyPhenotype(genes1 & genes2));
+
     CreateMonWithNature(temp, species, EGG_HATCH_LEVEL, USE_RANDOM_IVS, GetNatureFromPersonality(personality), genes1, genes2);
+
+    DebugPrintf("Is shiny?: %d", IsShinyOtIdPersonality(GetMonData(temp, MON_DATA_OT_ID), personality));
 
     for (i = 0; i < MAX_MON_MOVES; i++)
         SetMonData(temp, MON_DATA_MOVE1 + i,  &moves[i]);

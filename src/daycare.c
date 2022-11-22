@@ -472,8 +472,6 @@ static void InheritGenes(struct DayCare *daycare)
     u8 babyGenes1;
     u8 babyGenes2;
 
-    DebugPrintf("Parent1 IsShiny? %d", IsShinyPhenotype(GetBoxMonData(&daycare->mons[0].mon, MON_DATA_PHENOTYPE)));
-    DebugPrintf("Parent2 IsShiny? %d", IsShinyPhenotype(GetBoxMonData(&daycare->mons[1].mon, MON_DATA_PHENOTYPE)));
     // Randomly select which of the first parent's genes are passed on
     n = Random() >> 8;
     babyGenes1 = (GetBoxMonData(&daycare->mons[0].mon, MON_DATA_GENES1) & n) | (GetBoxMonData(&daycare->mons[0].mon, MON_DATA_GENES2) & ~n);
@@ -931,8 +929,7 @@ static void SetInitialEggData(struct Pokemon *mon, u16 species, struct DayCare *
     u32 nature = GetNatureFromPersonality(personality);
 
     personality = daycare->offspringPersonality;
-    DebugPrintf("Genes1: %d", daycare->offspringGenes1);
-    DebugPrintf("Genes2: %d", daycare->offspringGenes2);
+    
     CreateMonWithNature(mon, species, EGG_HATCH_LEVEL, USE_RANDOM_IVS, nature, daycare->offspringGenes1, daycare->offspringGenes1);
     metLevel = 0;
     ball = ITEM_POKE_BALL;

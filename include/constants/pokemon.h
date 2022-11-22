@@ -94,9 +94,9 @@
 // Shiny odds
 #define SHINY_ODDS 8 // Actual probability is SHINY_ODDS/65536; Depricated in favor of genetics
 
-// Genetics mutation odds
-#define WILD_MUTATION_ODDS 1000 // Actual probability is STAT_MUTATION_ODDS/65536
-#define EGG_MUTATION_ODDS 1000 // Actual probability is STAT_MUTATION_ODDS/65536
+// Genetics mutation odds. 724 creates almost the same odds of a wild/mutant shiny as vanilla
+#define WILD_MUTATION_ODDS 724 // Actual probability is STAT_MUTATION_ODDS/65536
+#define EGG_MUTATION_ODDS 724 // Actual probability is STAT_MUTATION_ODDS/65536
 
 // Ribbon IDs used by TV and Pokénav
 #define CHAMPION_RIBBON       0

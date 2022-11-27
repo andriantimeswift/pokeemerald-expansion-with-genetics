@@ -65,6 +65,7 @@ struct PokemonDebugMenu
     u8 battleTerrain;
     u8 currentSubmenu;
     u8 submenuYpos[3];
+    u8 phenotype;
 };
 
 void CB2_Debug_Pokemon(void);

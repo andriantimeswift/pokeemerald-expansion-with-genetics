@@ -76,12 +76,12 @@ void DecompressPicFromTableGender(void* buffer, s32 species, u32 personality)
         DecompressPicFromTable(&gMonFrontPicTable[species], buffer, species);
 }
 
-void HandleLoadSpecialPokePic(bool32 isFrontPic, void *dest, s32 species, u32 personality)
+void HandleLoadSpecialPokePic(bool32 isFrontPic, void *dest, s32 species, u32 personality, u8 phenotype)
 {
-    LoadSpecialPokePic(dest, species, personality, isFrontPic);
+    LoadSpecialPokePic(dest, species, personality, isFrontPic, phenotype);
 }
 
-void LoadSpecialPokePic(void *dest, s32 species, u32 personality, bool8 isFrontPic)
+void LoadSpecialPokePic(void *dest, s32 species, u32 personality, bool8 isFrontPic, u8 phenotype)
 {
     if (species == SPECIES_UNOWN)
     {

@@ -305,6 +305,7 @@ struct BattlePokemon
     /*0x4D*/ u32 status1;
     /*0x51*/ u32 status2;
     /*0x55*/ u32 otId;
+             u8 phenotype;
 };
 
 struct BaseStats
@@ -544,9 +545,9 @@ void PlayBattleBGM(void);
 void PlayMapChosenOrBattleBGM(u16 songId);
 void CreateTask_PlayMapChosenOrBattleBGM(u16 songId);
 const u32 *GetMonFrontSpritePal(struct Pokemon *mon);
-const u32 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, u32 otId, u32 personality);
+const u32 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, u32 otId, u32 personality, u8 phenotype);
 const struct CompressedSpritePalette *GetMonSpritePalStruct(struct Pokemon *mon);
-const struct CompressedSpritePalette *GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality);
+const struct CompressedSpritePalette *GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality, u8 phenotype);
 bool32 IsHMMove2(u16 move);
 bool8 IsMonSpriteNotFlipped(u16 species);
 s8 GetMonFlavorRelation(struct Pokemon *mon, u8 flavor);

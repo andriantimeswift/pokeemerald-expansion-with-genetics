@@ -800,7 +800,8 @@ static void Task_ShowAiPoints(u8 taskId)
                                                  gBattleMons[data->aiBattlerId].otId,
                                                  gBattleMons[data->aiBattlerId].personality,
                                                  TRUE,
-                                                 39, 130, 15, TAG_NONE);
+                                                 39, 130, 15, TAG_NONE,
+                                                 gBattleMons[data->aiBattlerId].phenotype);
         data->aiViewState++;
         break;
     // Put text
@@ -957,7 +958,8 @@ static void Task_ShowAiKnowledge(u8 taskId)
                                                  gBattleMons[data->aiBattlerId].otId,
                                                  gBattleMons[data->aiBattlerId].personality,
                                                  TRUE,
-                                                 39, 130, 15, TAG_NONE);
+                                                 39, 130, 15, TAG_NONE,
+                                                 gBattleMons[data->aiBattlerId].phenotype);
         data->aiViewState++;
         break;
     // Put text

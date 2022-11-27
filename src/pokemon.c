@@ -5753,6 +5753,7 @@ void PokemonToBattleMon(struct Pokemon *src, struct BattlePokemon *dst)
     dst->type2 = gBaseStats[dst->species].type2;
     dst->type3 = TYPE_MYSTERY;
     dst->ability = GetAbilityBySpecies(dst->species, dst->abilityNum);
+    dst->phenotype = GetMonData(src, MON_DATA_PHENOTYPE, NULL);
     GetMonData(src, MON_DATA_NICKNAME, nickname);
     StringCopy_Nickname(dst->nickname, nickname);
     GetMonData(src, MON_DATA_OT_NAME, dst->otName);
@@ -7866,10 +7867,11 @@ const u32 *GetMonFrontSpritePal(struct Pokemon *mon)
     u16 species = GetMonData(mon, MON_DATA_SPECIES2, 0);
     u32 otId = GetMonData(mon, MON_DATA_OT_ID, 0);
     u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, 0);
-    return GetMonSpritePalFromSpeciesAndPersonality(species, otId, personality);
+    u8 phenotype = GetMonData(mon, MON_DATA_PERSONALITY, 0);
+    return GetMonSpritePalFromSpeciesAndPersonality(species, otId, personality, phenotype);
 }
 
-const u32 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, u32 otId, u32 personality)
+const u32 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, u32 otId, u32 personality, u8 phenotype)
 {
     u32 shinyValue;
 
@@ -7898,12 +7900,15 @@ const struct CompressedSpritePalette *GetMonSpritePalStruct(struct Pokemon *mon)
     u16 species = GetMonData(mon, MON_DATA_SPECIES2, 0);
     u32 otId = GetMonData(mon, MON_DATA_OT_ID, 0);
     u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, 0);
-    return GetMonSpritePalStructFromOtIdPersonality(species, otId, personality);
+    u8 phenotype = GetMonData(mon, MON_DATA_PHENOTYPE, 0);
+    return GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype);
 }
 
-const struct CompressedSpritePalette *GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality)
+const struct CompressedSpritePalette *GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality, u8 phenotype)
 {
     u32 shinyValue;
+    struct CompressedSpritePalette pal;
+
 
     shinyValue = GET_SHINY_VALUE(otId, personality);
     if (shinyValue < SHINY_ODDS)
@@ -7920,6 +7925,9 @@ const struct CompressedSpritePalette *GetMonSpritePalStructFromOtIdPersonality(u
         else
             return &gMonPaletteTable[species];
     }
+
+    
+    // THIS IS THE PALETTE FUNCTION!!!
 }
 
 bool32 IsHMMove2(u16 move)

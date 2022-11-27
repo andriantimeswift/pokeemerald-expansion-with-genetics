@@ -7893,6 +7893,7 @@ const u32 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, u32 otId, u32 p
         else
             return gMonPaletteTable[species].data;
     }
+    //THIS IS THE PALETTE FUNCTION
 }
 
 const struct CompressedSpritePalette *GetMonSpritePalStruct(struct Pokemon *mon)
@@ -7904,30 +7905,131 @@ const struct CompressedSpritePalette *GetMonSpritePalStruct(struct Pokemon *mon)
     return GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype);
 }
 
+// WARNING: You'll want to load the returned palette before you call CompressSpritePalette again, else you'll get weird results.
+struct CompressedSpritePalette *CompressSpritePalette(const u16 *data)
+{
+    static EWRAM_DATA u32 csp;
+    static EWRAM_DATA u32 buffer[40 / sizeof(u32)];
+
+    int i, j;
+    const u8 *src = (const u8 *)data;
+    u8 *dest = (u8 *)buffer;
+
+    // Header.
+    *dest++ = 0x10;
+    *dest++ = 0x20;
+    *dest++ = 0x00;
+    *dest++ = 0x00;
+
+    for (i = 0; i < 0x20; i += 8)
+    {
+        *dest++ = 0x00;
+        for (j = 0; j < 8; j++)
+            *dest++ = *src++;
+    }
+
+    csp = buffer;
+    return &csp;
+}
+
+void GetMonPaletteFromPhenotype(u16 *basePalette, u16 species, u8 phenotype, u16 *outputPalette)
+{
+    u16 *pal = &basePalette;
+    if ((phenotype >> ALBINO_GENE_INDEX) & 1)
+    {
+        u16 *tempPal = pal;
+        if ((phenotype >> SHINY_GENE_INDEX) & 1)
+        {
+            LZDecompressWram(&gMonAlbinoShinyPaletteTable[species], &tempPal);
+        }
+        else
+        {
+            LZDecompressWram(&gMonAlbinoPaletteTable[species], &tempPal);
+        }
+
+        if ((phenotype >> ALBINO_FADE_GENE_INDEX) & 1)
+        {
+            AlphaBlendPalettes(&pal, &tempPal, 8, &pal);
+        }
+        else 
+        {
+            pal = tempPal;
+        }
+    }
+
+    if ((phenotype >> MELANISTIC_GENE_INDEX) & 1)
+    {
+        u16 *tempPal = &pal;
+        if ((phenotype >> SHINY_GENE_INDEX) & 1)
+        {
+            LZDecompressWram(&gMonMelanisticShinyPaletteTable[species], &tempPal);
+        }
+        else
+        {
+            LZDecompressWram(&gMonMelanisticPaletteTable[species], &tempPal);
+        }
+
+        if ((phenotype >> MELANISTIC_FADE_GENE_INDEX) & 1)
+        {
+            AlphaBlendPalettes(&pal, &tempPal, 8, &pal);
+        }
+        else
+        {
+            if ((phenotype >> ALBINO_FADE_GENE_INDEX) & 1)
+            {
+                AlphaBlendPalettes(&pal, &tempPal, 8, &pal);
+            }
+            else 
+            {
+                pal = &tempPal;
+            }
+        }
+    }
+
+    if ((phenotype >> ALT_PATTERN_GENE_INDEX) & 1)
+    {
+        u16 *tempPal = &pal;
+        if ((phenotype >> ALT_PATTERN_ALT_COLOR_GENE_INDEX) & 1)
+        {
+            LZDecompressWram(&gMonAltPatternAltColorPaletteTable[species], &tempPal);
+        }
+        else
+        {
+            LZDecompressWram(&gMonAltPatternPaletteTable[species], &tempPal);
+        }
+
+        ModifyPalette(&pal, &tempPal, &pal)
+    }
+    outputPalette = &pal;}
 const struct CompressedSpritePalette *GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality, u8 phenotype)
 {
     u32 shinyValue;
     struct CompressedSpritePalette pal;
+    u16 *decompressedPal;
 
 
     shinyValue = GET_SHINY_VALUE(otId, personality);
     if (shinyValue < SHINY_ODDS)
     {
         if (ShouldShowFemaleDifferences(species, personality))
-            return &gMonShinyPaletteTableFemale[species];
+            pal = gMonShinyPaletteTableFemale[species];
         else
-            return &gMonShinyPaletteTable[species];
+            pal = gMonShinyPaletteTable[species];
     }
     else
     {
         if (ShouldShowFemaleDifferences(species, personality))
-            return &gMonPaletteTableFemale[species];
+            pal = gMonPaletteTableFemale[species];
         else
-            return &gMonPaletteTable[species];
+            pal = gMonPaletteTable[species];
     }
 
-    
-    // THIS IS THE PALETTE FUNCTION!!!
+    LZDecompressWram(&pal, &decompressedPal)
+    GetMonPaletteFromPhenotype(&decompressedPal, species, phenotype, &decompressedPal)
+    pal = CompressSpritePalette(pal.tag, &decompressedPal)
+    //THIS IS THE PALETTE FUNCTION?
+
+    return pal;
 }
 
 bool32 IsHMMove2(u16 move)

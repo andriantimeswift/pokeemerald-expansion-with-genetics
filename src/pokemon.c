@@ -7937,7 +7937,10 @@ void GetMonPaletteFromPhenotype(u16 *basePalette, u16 species, u8 phenotype, u16
     u16 *pal = &basePalette;
     if ((phenotype >> ALBINO_GENE_INDEX) & 1)
     {
-        u16 *tempPal = pal;
+        u16 *tempPal;
+        u16 *palCopy;
+        memcpy(tempPal, pal, sizeof(pal));
+        memcpy(palCopy, pal, sizeof(pal));
         if ((phenotype >> SHINY_GENE_INDEX) & 1)
         {
             LZDecompressWram(&gMonAlbinoShinyPaletteTable[species], &tempPal);
@@ -7949,7 +7952,7 @@ void GetMonPaletteFromPhenotype(u16 *basePalette, u16 species, u8 phenotype, u16
 
         if ((phenotype >> ALBINO_FADE_GENE_INDEX) & 1)
         {
-            AlphaBlendPalettes(&pal, &tempPal, 8, &pal);
+            AlphaBlendPalettes(palCopy, &tempPal, 8, &pal);
         }
         else 
         {
@@ -7959,7 +7962,10 @@ void GetMonPaletteFromPhenotype(u16 *basePalette, u16 species, u8 phenotype, u16
 
     if ((phenotype >> MELANISTIC_GENE_INDEX) & 1)
     {
-        u16 *tempPal = &pal;
+        u16 *tempPal;
+        u16 *palCopy;
+        memcpy(tempPal, pal, sizeof(pal));
+        memcpy(palCopy, pal, sizeof(pal));
         if ((phenotype >> SHINY_GENE_INDEX) & 1)
         {
             LZDecompressWram(&gMonMelanisticShinyPaletteTable[species], &tempPal);
@@ -7971,24 +7977,27 @@ void GetMonPaletteFromPhenotype(u16 *basePalette, u16 species, u8 phenotype, u16
 
         if ((phenotype >> MELANISTIC_FADE_GENE_INDEX) & 1)
         {
-            AlphaBlendPalettes(&pal, &tempPal, 8, &pal);
+            AlphaBlendPalettes(palCopy, &tempPal, 8, &pal);
         }
         else
         {
             if ((phenotype >> ALBINO_FADE_GENE_INDEX) & 1)
             {
-                AlphaBlendPalettes(&pal, &tempPal, 8, &pal);
+                AlphaBlendPalettes(palCopy, &tempPal, 8, &pal);
             }
             else 
             {
-                pal = &tempPal;
+                pal = tempPal;
             }
         }
     }
 
     if ((phenotype >> ALT_PATTERN_GENE_INDEX) & 1)
     {
-        u16 *tempPal = &pal;
+        u16 *tempPal;
+        u16 *palCopy;
+        memcpy(tempPal, pal, sizeof(pal));
+        memcpy(palCopy, pal, sizeof(pal));
         if ((phenotype >> ALT_PATTERN_ALT_COLOR_GENE_INDEX) & 1)
         {
             LZDecompressWram(&gMonAltPatternAltColorPaletteTable[species], &tempPal);
@@ -7998,13 +8007,14 @@ void GetMonPaletteFromPhenotype(u16 *basePalette, u16 species, u8 phenotype, u16
             LZDecompressWram(&gMonAltPatternPaletteTable[species], &tempPal);
         }
 
-        ModifyPalette(&pal, &tempPal, &pal)
+        ModifyPalette(palCopy, &tempPal, &pal);
     }
-    outputPalette = &pal;}
+    outputPalette = pal;
+}
 const struct CompressedSpritePalette *GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality, u8 phenotype)
 {
     u32 shinyValue;
-    struct CompressedSpritePalette pal;
+    struct CompressedSpritePalette *pal;
     u16 *decompressedPal;
 
 
@@ -8024,9 +8034,9 @@ const struct CompressedSpritePalette *GetMonSpritePalStructFromOtIdPersonality(u
             pal = gMonPaletteTable[species];
     }
 
-    LZDecompressWram(&pal, &decompressedPal)
-    GetMonPaletteFromPhenotype(&decompressedPal, species, phenotype, &decompressedPal)
-    pal = CompressSpritePalette(pal.tag, &decompressedPal)
+    LZDecompressWram(&pal, &decompressedPal);
+    GetMonPaletteFromPhenotype(decompressedPal, species, phenotype, decompressedPal);
+    pal = CompressSpritePalette(pal.tag, &decompressedPal);
     //THIS IS THE PALETTE FUNCTION?
 
     return pal;

@@ -1369,7 +1369,6 @@ const struct CompressedSpriteSheet gMonBackPicTableFemale[] =
 
 const struct CompressedSpriteSheet gMonBackPicSpecialTraitTable[] =
 {
-    SPECIES_SPRITE(NONE_SPECIAL_TRAIT, gMonBackPicSpecialTrait_CircledQuestionMark),
     SPECIES_SPRITE(BULBASAUR_SPECIAL_TRAIT, gMonBackPicSpecialTrait_Bulbasaur),
     SPECIES_SPRITE(IVYSAUR_SPECIAL_TRAIT, gMonBackPicSpecialTrait_Ivysaur),
     SPECIES_SPRITE(VENUSAUR_SPECIAL_TRAIT, gMonBackPicSpecialTrait_Venusaur),

@@ -1212,6 +1212,7 @@ const u32 gMonFrontPic_CalyrexShadowRider[] = INCBIN_U32("graphics/pokemon/calyr
 //const u32 gMonFrontPic_EnamorusTherian[] = INCBIN_U32("graphics/pokemon/enamorus/therian/front.4bpp.lz");
 #endif
 
+const u32 gMonFrontPic_Special_Trait_Bulbasaur[] = INCBIN_U32("graphics/pokemon/bulbasaur/anim_front_special_trait.4bpp.lz");
 const u32 gMonFrontPic_Special_Trait_Ivysaur[] = INCBIN_U32("graphics/pokemon/ivysaur/anim_front_special_trait.4bpp.lz");
 const u32 gMonFrontPic_Special_Trait_Venusaur[] = INCBIN_U32("graphics/pokemon/venusaur/anim_front_special_trait.4bpp.lz");
 const u32 gMonFrontPic_Special_Trait_Charmander[] = INCBIN_U32("graphics/pokemon/charmander/anim_front_special_trait.4bpp.lz");

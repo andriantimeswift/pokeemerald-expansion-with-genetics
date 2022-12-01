@@ -882,6 +882,7 @@ static void Task_ShowWinnerMonBanner(u8 taskId)
     u32 personality;
     u8 phenotype;
     const struct CompressedSpritePalette *pokePal;
+    struct CompressedSpritePalette tempPal;
 
     switch (gTasks[taskId].tState)
     {
@@ -899,7 +900,8 @@ static void Task_ShowWinnerMonBanner(u8 taskId)
                                 species,
                                 personality, phenotype);
 
-        pokePal = GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype);
+        GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype, &tempPal);
+        pokePal = &tempPal;
         LoadCompressedSpritePalette(pokePal);
         SetMultiuseSpriteTemplateToPokemon(species, B_POSITION_OPPONENT_LEFT);
         gMultiuseSpriteTemplate.paletteTag = pokePal->tag;
@@ -2556,6 +2558,7 @@ bool8 IsContestDebugActive(void)
 void ShowContestEntryMonPic(void)
 {
     const struct CompressedSpritePalette *palette;
+    struct CompressedSpritePalette tempPal;
     u32 personality, otId;
     u16 species;
     u8 spriteId;
@@ -2577,7 +2580,8 @@ void ShowContestEntryMonPic(void)
         gTasks[taskId].data[1] = species;
         HandleLoadSpecialPokePic(TRUE, gMonSpritesGfxPtr->sprites.ptr[B_POSITION_OPPONENT_LEFT], species, personality, phenotype);
 
-        palette = GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype);
+        GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype, &tempPal);
+        palette = &tempPal;
         LoadCompressedSpritePalette(palette);
         SetMultiuseSpriteTemplateToPokemon(species, B_POSITION_OPPONENT_LEFT);
         gMultiuseSpriteTemplate.paletteTag = palette->tag;

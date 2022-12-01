@@ -11,6 +11,7 @@
 #include "battle_tower.h"
 #include "battle_z_move.h"
 #include "data.h"
+#include "decompress.h"
 #include "event_data.h"
 #include "evolution_scene.h"
 #include "field_specials.h"
@@ -48,6 +49,7 @@
 #include "constants/items.h"
 #include "constants/layouts.h"
 #include "constants/moves.h"
+#include "constants/rgb.h"
 #include "constants/songs.h"
 #include "constants/trainers.h"
 #include "constants/union_room.h"
@@ -7896,17 +7898,44 @@ const u32 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, u32 otId, u32 p
     //THIS IS THE PALETTE FUNCTION
 }
 
-const struct CompressedSpritePalette *GetMonSpritePalStruct(struct Pokemon *mon)
+void GetMonSpritePalStruct(struct Pokemon *mon, struct CompressedSpritePalette *pal)
 {
     u16 species = GetMonData(mon, MON_DATA_SPECIES2, 0);
     u32 otId = GetMonData(mon, MON_DATA_OT_ID, 0);
     u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, 0);
     u8 phenotype = GetMonData(mon, MON_DATA_PHENOTYPE, 0);
-    return GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype);
+    GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype, pal);
+}
+
+//Returns a new palette which is the result of alpha blending foreground over background. Coeff must be between 0 and 16.
+void AlphaBlendPalettes(u32 basePalette[16], u32 modifierPalette[16], u32 coeff, u32 outputPalette[16])
+{
+    u32 coeffMax = 16;
+    u32 i;
+    for (i = 0; i < 16; i++)
+    {
+        struct PlttData *background = (struct PlttData *)&basePalette[i];
+        struct PlttData *foreground = (struct PlttData *)&modifierPalette[i];
+        outputPalette[i] = RGB(((foreground->r * coeff) / coeffMax) + ((background->r * (1 - coeff))/coeffMax),
+                                    ((foreground->g * coeff) / coeffMax) + ((background->g * (1 - coeff))/coeffMax),
+                                    ((foreground->b * coeff) / coeffMax) + ((background->b * (1 - coeff))/coeffMax));  
+    } 
+}
+
+void ModifyPalette(u32 basePalette[16], u32 modifierPalette[16], u32 outputPalette[16])
+{
+    u32 i;
+    for (i = 0; i < 16; i++)
+    {
+        if ((u16) modifierPalette[i] != 0)
+            outputPalette[i] = modifierPalette[i];
+        else
+            outputPalette[i] = basePalette[i];
+    }  
 }
 
 // WARNING: You'll want to load the returned palette before you call CompressSpritePalette again, else you'll get weird results.
-struct CompressedSpritePalette *CompressSpritePalette(const u16 *data)
+void CompressSpritePalette(const u32 data[16])
 {
     static EWRAM_DATA u32 csp;
     static EWRAM_DATA u32 buffer[40 / sizeof(u32)];
@@ -7926,120 +7955,127 @@ struct CompressedSpritePalette *CompressSpritePalette(const u16 *data)
         *dest++ = 0x00;
         for (j = 0; j < 8; j++)
             *dest++ = *src++;
+
     }
 
-    csp = buffer;
-    return &csp;
+    csp = *buffer;
+    output = &csp;
 }
 
-void GetMonPaletteFromPhenotype(u16 *basePalette, u16 species, u8 phenotype, u16 *outputPalette)
+void GetMonPaletteFromPhenotype(u32 *basePalette, u16 species, u8 phenotype, u32 *outputPalette)
 {
-    u16 *pal = &basePalette;
+    u32 pal[16];
+    u32 
+    CpuCopy32(basePalette, pal, 16);
     if ((phenotype >> ALBINO_GENE_INDEX) & 1)
     {
-        u16 *tempPal;
-        u16 *palCopy;
-        memcpy(tempPal, pal, sizeof(pal));
-        memcpy(palCopy, pal, sizeof(pal));
+        u32 tempPal[16];
+        u32 palCopy[16];
+        CpuCopy32(pal, palCopy, 16);
         if ((phenotype >> SHINY_GENE_INDEX) & 1)
         {
-            LZDecompressWram(&gMonAlbinoShinyPaletteTable[species], &tempPal);
+            LZDecompressWram(gMonAlbinoShinyPaletteTable[species].data, tempPal);
         }
         else
         {
-            LZDecompressWram(&gMonAlbinoPaletteTable[species], &tempPal);
+            LZDecompressWram(gMonAlbinoPaletteTable[species].data, tempPal);
         }
 
         if ((phenotype >> ALBINO_FADE_GENE_INDEX) & 1)
         {
-            AlphaBlendPalettes(palCopy, &tempPal, 8, &pal);
+            AlphaBlendPalettes(palCopy, tempPal, 8, pal);
         }
         else 
         {
-            pal = tempPal;
+            CpuCopy32(tempPal, pal, 16);
         }
     }
 
     if ((phenotype >> MELANISTIC_GENE_INDEX) & 1)
     {
-        u16 *tempPal;
-        u16 *palCopy;
-        memcpy(tempPal, pal, sizeof(pal));
-        memcpy(palCopy, pal, sizeof(pal));
+        u32 tempPal[16];
+        u32 palCopy[16];
+        CpuCopy32(tempPal, pal, 16);
+        CpuCopy32(palCopy, pal, 16);
         if ((phenotype >> SHINY_GENE_INDEX) & 1)
         {
-            LZDecompressWram(&gMonMelanisticShinyPaletteTable[species], &tempPal);
+            LZDecompressWram(gMonMelanisticShinyPaletteTable[species].data, tempPal);
         }
         else
         {
-            LZDecompressWram(&gMonMelanisticPaletteTable[species], &tempPal);
+            LZDecompressWram(gMonMelanisticPaletteTable[species].data, tempPal);
         }
 
         if ((phenotype >> MELANISTIC_FADE_GENE_INDEX) & 1)
         {
-            AlphaBlendPalettes(palCopy, &tempPal, 8, &pal);
+            AlphaBlendPalettes(palCopy, tempPal, 8, pal);
         }
         else
         {
             if ((phenotype >> ALBINO_FADE_GENE_INDEX) & 1)
             {
-                AlphaBlendPalettes(palCopy, &tempPal, 8, &pal);
+                AlphaBlendPalettes(palCopy, tempPal, 8, pal);
             }
             else 
             {
-                pal = tempPal;
+                CpuCopy32(tempPal, pal, 16);
             }
         }
     }
 
     if ((phenotype >> ALT_PATTERN_GENE_INDEX) & 1)
     {
-        u16 *tempPal;
-        u16 *palCopy;
-        memcpy(tempPal, pal, sizeof(pal));
-        memcpy(palCopy, pal, sizeof(pal));
+        u32 tempPal[16];
+        u32 palCopy[16];
+        CpuCopy32(tempPal, pal, 16);
+        CpuCopy32(palCopy, pal, 16);
         if ((phenotype >> ALT_PATTERN_ALT_COLOR_GENE_INDEX) & 1)
         {
-            LZDecompressWram(&gMonAltPatternAltColorPaletteTable[species], &tempPal);
+            LZDecompressWram(gMonAltPatternAltColorPaletteTable[species].data, tempPal);
         }
         else
         {
-            LZDecompressWram(&gMonAltPatternPaletteTable[species], &tempPal);
+            LZDecompressWram(gMonAltPatternPaletteTable[species].data, tempPal);
         }
 
-        ModifyPalette(palCopy, &tempPal, &pal);
+        ModifyPalette(palCopy, tempPal, pal);
     }
-    outputPalette = pal;
+    pal = CompressSpritePalette(pal);
+    CpuCopy32(pal, outputPalette, 16);
 }
-const struct CompressedSpritePalette *GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality, u8 phenotype)
+
+void GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality, u8 phenotype, struct CompressedSpritePalette *pal)
 {
     u32 shinyValue;
-    struct CompressedSpritePalette *pal;
-    u16 *decompressedPal;
+    static u32 decompressedPal[16];
+    u32 *tempPal;
+    u32 i;
+    struct CompressedSpritePalette newPal;
 
 
     shinyValue = GET_SHINY_VALUE(otId, personality);
     if (shinyValue < SHINY_ODDS)
     {
         if (ShouldShowFemaleDifferences(species, personality))
-            pal = gMonShinyPaletteTableFemale[species];
+            *pal = gMonShinyPaletteTableFemale[species];
         else
-            pal = gMonShinyPaletteTable[species];
+            *pal = gMonShinyPaletteTable[species];
     }
     else
     {
         if (ShouldShowFemaleDifferences(species, personality))
-            pal = gMonPaletteTableFemale[species];
+            *pal = gMonPaletteTableFemale[species];
         else
-            pal = gMonPaletteTable[species];
+            *pal = gMonPaletteTable[species];
     }
 
-    LZDecompressWram(&pal, &decompressedPal);
-    GetMonPaletteFromPhenotype(decompressedPal, species, phenotype, decompressedPal);
-    pal = CompressSpritePalette(pal.tag, &decompressedPal);
+    LZDecompressWram(pal->data, decompressedPal);
+    GetMonPaletteFromPhenotype(decompressedPal, species, phenotype, tempPal);
+    newPal.data = tempPal;
+    newPal.tag = pal->tag;
+    *pal = newPal;
     //THIS IS THE PALETTE FUNCTION?
 
-    return pal;
 }
 
 bool32 IsHMMove2(u16 move)

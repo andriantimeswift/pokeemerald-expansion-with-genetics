@@ -721,6 +721,7 @@ static bool8 LoadMonAndSceneGfx(struct Pokemon *mon)
     u32 personality, trainerId;
     u8 phenotype;
     const struct CompressedSpritePalette *palette;
+    struct CompressedSpritePalette tempPal;
 
     switch (sPokeblockFeed->loadGfxState)
     {
@@ -738,7 +739,8 @@ static bool8 LoadMonAndSceneGfx(struct Pokemon *mon)
         personality = GetMonData(mon, MON_DATA_PERSONALITY);
         trainerId = GetMonData(mon, MON_DATA_OT_ID);
         phenotype = GetMonData(mon, MON_DATA_PHENOTYPE);
-        palette = GetMonSpritePalStructFromOtIdPersonality(species, trainerId, personality, phenotype);
+        GetMonSpritePalStructFromOtIdPersonality(species, trainerId, personality, phenotype, &tempPal);
+        palette = &tempPal;
 
         LoadCompressedSpritePalette(palette);
         SetMultiuseSpriteTemplateToPokemon(palette->tag, B_POSITION_OPPONENT_LEFT);

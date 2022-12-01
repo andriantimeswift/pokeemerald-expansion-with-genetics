@@ -78,6 +78,7 @@ static bool16 DecompressPic(u16 species, u32 personality, bool8 isFrontPic, u8 *
 
 static void LoadPicPaletteByTagOrSlot(u16 species, u32 otId, u32 personality, u8 paletteSlot, u16 paletteTag, bool8 isTrainer, u8 phenotype)
 {
+    struct CompressedSpritePalette tempPal;
     if (!isTrainer)
     {
         if (paletteTag == TAG_NONE)
@@ -88,7 +89,8 @@ static void LoadPicPaletteByTagOrSlot(u16 species, u32 otId, u32 personality, u8
         else
         {
             sCreatingSpriteTemplate.paletteTag = paletteTag;
-            LoadCompressedSpritePalette(GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype));
+            GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype, &tempPal);
+            LoadCompressedSpritePalette(&tempPal);
         }
     }
     else

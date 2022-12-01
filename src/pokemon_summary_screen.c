@@ -3979,6 +3979,7 @@ static void SwapMovesTypeSprites(u8 moveIndex1, u8 moveIndex2)
 static u8 LoadMonGfxAndSprite(struct Pokemon *mon, s16 *state)
 {
     const struct CompressedSpritePalette *pal;
+    struct CompressedSpritePalette tempPal;
     struct PokeSummary *summary = &sMonSummaryScreen->summary;
 
     switch (*state)
@@ -4014,7 +4015,8 @@ static u8 LoadMonGfxAndSprite(struct Pokemon *mon, s16 *state)
         (*state)++;
         return 0xFF;
     case 1:
-        pal = GetMonSpritePalStructFromOtIdPersonality(summary->species2, summary->OTID, summary->pid, GetMonData(mon, MON_DATA_PHENOTYPE));
+        GetMonSpritePalStructFromOtIdPersonality(summary->species2, summary->OTID, summary->pid, GetMonData(mon, MON_DATA_PHENOTYPE), &tempPal);
+        pal = &tempPal;
         LoadCompressedSpritePalette(pal);
         SetMultiuseSpriteTemplateToPokemon(pal->tag, B_POSITION_OPPONENT_LEFT);
         (*state)++;

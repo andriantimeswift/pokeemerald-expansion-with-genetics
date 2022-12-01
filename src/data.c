@@ -310,6 +310,8 @@ const union AnimCmd *const gAnims_MonPic[] =
 #include "data/pokemon_graphics/shiny_palette_table.h"
 #include "data/pokemon_graphics/albino_palette_table.h"
 #include "data/pokemon_graphics/melanistic_palette_table.h"
+#include "data/pokemon_graphics/albino_shiny_palette_table.h"
+#include "data/pokemon_graphics/melanistic_shiny_palette_table.h"
 #include "data/pokemon_graphics/alt_pattern_palette_table.h"
 #include "data/pokemon_graphics/alt_pattern_alt_color_palette_table.h"
 

@@ -278,29 +278,3 @@ void BlendPalette(u16 palOffset, u16 numEntries, u8 coeff, u16 blendColor)
     }
 }
 
-//Returns a new palette which is the result of alpha blending foreground over background. Coeff must be between 0 and 16.
-void AlphaBlendPalettes(u16 *basePalette, u16 *modifierPalette, u32 coeff, u16 *outputPalette)
-{
-    u32 coeffMax = 16;
-    u32 i;
-    for (i = 0; i < 16; i++)
-    {
-        struct PlttData *background = (struct PlttData *)&basePalette[i];
-        struct PlttData *foreground = (struct PlttData *)&modifierPalette[i];
-        outputPalette[i] = RGB(((foreground->r * coeff) / coeffMax) + ((background->r * (1 - coeff))/coeffMax),
-                                    ((foreground->g * coeff) / coeffMax) + ((background->g * (1 - coeff))/coeffMax),
-                                    ((foreground->b * coeff) / coeffMax) + ((background->b * (1 - coeff))/coeffMax));  
-    } 
-}
-
-void ModifyPalette(u16 *basePalette, u16 *modifierPalette, u16 *outputPalette)
-{
-    u32 i;
-    for (i = 0; i < 16; i++)
-    {
-        if ((u16) modifierPalette[i] != 0)
-            outputPalette[i] = modifierPalette[i];
-        else
-            outputPalette[i] = basePalette[i];
-    }  
-}

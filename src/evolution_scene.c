@@ -213,7 +213,7 @@ void EvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, bool8 canStopEvo, u
     u16 currSpecies;
     u32 trainerId, personality;
     const struct CompressedSpritePalette* pokePal;
-    struct CompressedSpritePalette* tempPal;
+    struct CompressedSpritePalette tempPal;
     u8 id, phenotype;
 
     SetHBlankCallback(NULL);
@@ -265,8 +265,8 @@ void EvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, bool8 canStopEvo, u
     DecompressPicFromTableGender(gMonSpritesGfxPtr->sprites.ptr[B_POSITION_OPPONENT_LEFT],
                                 currSpecies,
                                 personality);
-    GetMonSpritePalStructFromOtIdPersonality(currSpecies, trainerId, personality, phenotype, tempPal);                            
-    pokePal = tempPal;
+    GetMonSpritePalStructFromOtIdPersonality(currSpecies, trainerId, personality, phenotype, &tempPal);                            
+    pokePal = &tempPal;
     LoadCompressedPalette(pokePal->data, 0x110, 0x20);
 
     SetMultiuseSpriteTemplateToPokemon(currSpecies, B_POSITION_OPPONENT_LEFT);
@@ -282,8 +282,8 @@ void EvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, bool8 canStopEvo, u
                                 postEvoSpecies,
                                 personality);
 
-    GetMonSpritePalStructFromOtIdPersonality(postEvoSpecies, trainerId, personality, phenotype, tempPal);
-    pokePal = tempPal;
+    GetMonSpritePalStructFromOtIdPersonality(postEvoSpecies, trainerId, personality, phenotype, &tempPal);
+    pokePal = &tempPal;
     LoadCompressedPalette(pokePal->data, 0x120, 0x20);
 
     SetMultiuseSpriteTemplateToPokemon(postEvoSpecies, B_POSITION_OPPONENT_RIGHT);

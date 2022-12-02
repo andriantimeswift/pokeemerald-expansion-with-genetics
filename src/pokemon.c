@@ -7963,7 +7963,7 @@ u32 *CompressSpritePalette(const u32 data[16])
     //output = &csp;
 }
 
-void GetMonPaletteFromPhenotype(u32 *basePalette, u16 species, u8 phenotype, u32 *outputPalette)
+void GetMonPaletteFromPhenotype(u32 *basePalette, u16 species, u8 phenotype, u32 *outputPalette, u16 *tag)
 {
     u32 pal[16];
     CpuCopy32(basePalette, pal, 16);
@@ -7974,11 +7974,13 @@ void GetMonPaletteFromPhenotype(u32 *basePalette, u16 species, u8 phenotype, u32
         CpuCopy32(pal, palCopy, 16);
         if ((phenotype >> SHINY_GENE_INDEX) & 1)
         {
-            LZDecompressWram(gMonAlbinoShinyPaletteTable[species].data, tempPal);
+            LZDecompressWram(gMonAlbinoShinyPaletteTable[species+1].data, tempPal);
+            *tag = gMonAlbinoShinyPaletteTable[species+1].tag;
         }
         else
         {
-            LZDecompressWram(gMonAlbinoPaletteTable[species].data, tempPal);
+            LZDecompressWram(gMonAlbinoPaletteTable[species+1].data, tempPal);
+            *tag = gMonAlbinoPaletteTable[species+1].tag;
         }
 
         if ((phenotype >> ALBINO_FADE_GENE_INDEX) & 1)
@@ -7999,11 +8001,14 @@ void GetMonPaletteFromPhenotype(u32 *basePalette, u16 species, u8 phenotype, u32
         CpuCopy32(palCopy, pal, 16);
         if ((phenotype >> SHINY_GENE_INDEX) & 1)
         {
-            LZDecompressWram(gMonMelanisticShinyPaletteTable[species].data, tempPal);
+            LZDecompressWram(gMonMelanisticShinyPaletteTable[species+1].data, tempPal);
+            *tag = gMonMelanisticShinyPaletteTable[species+1].tag;
         }
         else
         {
-            LZDecompressWram(gMonMelanisticPaletteTable[species].data, tempPal);
+            LZDecompressWram(gMonMelanisticPaletteTable[species+1].data, tempPal);
+            *tag = gMonMelanisticPaletteTable[species+1].tag;
+            
         }
 
         if ((phenotype >> MELANISTIC_FADE_GENE_INDEX) & 1)
@@ -8031,11 +8036,11 @@ void GetMonPaletteFromPhenotype(u32 *basePalette, u16 species, u8 phenotype, u32
         CpuCopy32(palCopy, pal, 16);
         if ((phenotype >> ALT_PATTERN_ALT_COLOR_GENE_INDEX) & 1)
         {
-            LZDecompressWram(gMonAltPatternAltColorPaletteTable[species].data, tempPal);
+            LZDecompressWram(gMonAltPatternAltColorPaletteTable[species+1].data, tempPal);
         }
         else
         {
-            LZDecompressWram(gMonAltPatternPaletteTable[species].data, tempPal);
+            LZDecompressWram(gMonAltPatternPaletteTable[species+1].data, tempPal);
         }
 
         ModifyPalette(palCopy, tempPal, pal);
@@ -8047,9 +8052,9 @@ void GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 person
 {
     u32 shinyValue;
     static u32 decompressedPal[16];
-    u32 *tempPal;
+    static u32 tempPal[16];
     u32 i;
-    struct CompressedSpritePalette newPal;
+    static struct CompressedSpritePalette newPal;
 
 
     shinyValue = GET_SHINY_VALUE(otId, personality);
@@ -8069,10 +8074,10 @@ void GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 person
     }
 
     LZDecompressWram(pal->data, decompressedPal);
-    GetMonPaletteFromPhenotype(decompressedPal, species, phenotype, tempPal);
-    newPal.data = tempPal;
     newPal.tag = pal->tag;
-    *pal = newPal;
+    GetMonPaletteFromPhenotype(decompressedPal, species, phenotype, tempPal, &newPal.tag);
+    newPal.data = tempPal;
+    pal = &newPal;
     //THIS IS THE PALETTE FUNCTION?
 
 }

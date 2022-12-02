@@ -7935,9 +7935,9 @@ void ModifyPalette(u32 basePalette[16], u32 modifierPalette[16], u32 outputPalet
 }
 
 // WARNING: You'll want to load the returned palette before you call CompressSpritePalette again, else you'll get weird results.
-void CompressSpritePalette(const u32 data[16])
+u32 *CompressSpritePalette(const u32 data[16])
 {
-    static EWRAM_DATA u32 csp;
+    static EWRAM_DATA u32 *csp;
     static EWRAM_DATA u32 buffer[40 / sizeof(u32)];
 
     int i, j;
@@ -7958,14 +7958,14 @@ void CompressSpritePalette(const u32 data[16])
 
     }
 
-    csp = *buffer;
-    output = &csp;
+    csp = buffer;
+    return csp;
+    //output = &csp;
 }
 
 void GetMonPaletteFromPhenotype(u32 *basePalette, u16 species, u8 phenotype, u32 *outputPalette)
 {
     u32 pal[16];
-    u32 
     CpuCopy32(basePalette, pal, 16);
     if ((phenotype >> ALBINO_GENE_INDEX) & 1)
     {
@@ -8040,8 +8040,7 @@ void GetMonPaletteFromPhenotype(u32 *basePalette, u16 species, u8 phenotype, u32
 
         ModifyPalette(palCopy, tempPal, pal);
     }
-    pal = CompressSpritePalette(pal);
-    CpuCopy32(pal, outputPalette, 16);
+    CpuCopy32(CompressSpritePalette(pal), outputPalette, 16);
 }
 
 void GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality, u8 phenotype, struct CompressedSpritePalette *pal)

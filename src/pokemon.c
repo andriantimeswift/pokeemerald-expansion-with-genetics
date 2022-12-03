@@ -8049,16 +8049,16 @@ void GetMonPaletteFromPhenotype(u32 *basePalette, u16 species, u8 phenotype, u32
         CpuCopy32(palCopy, pal, 16);
         if ((phenotype >> ALT_PATTERN_ALT_COLOR_GENE_INDEX) & 1)
         {
-            LZDecompressWram(gMonAltPatternAltColorPaletteTable[species-1].data, tempPal);
+            LZDecompressWram(gMonAltPatternAltColorPaletteTable[species].data, tempPal);
         }
         else
         {
-            LZDecompressWram(gMonAltPatternPaletteTable[species-1].data, tempPal);
+            LZDecompressWram(gMonAltPatternPaletteTable[species].data, tempPal);
         }
 
         ModifyPalette(palCopy, tempPal, pal);
     }
-    
+
     outputPalette = (u32 *)pal;
 }
 

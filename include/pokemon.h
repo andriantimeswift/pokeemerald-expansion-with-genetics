@@ -553,7 +553,7 @@ struct CompressedSpritePalette GetMonSpritePalStruct(struct Pokemon *mon);
 void AlphaBlendPalettes(u16 basePalette[16], u16 modifierPalette[16], u32 coeff, u16 outputPalette[16]);
 void ModifyPalette(u16 basePalette[16], u16 modifierPalette[16], u16 outputPalette[16]);
 u32 *CompressSpritePalette(const u16 data[16]);
-void GetMonPaletteFromPhenotype(u16 *basePalette, u16 species, u8 phenotype, u16 *outputPalette, u16 *tag);
+void GetMonPaletteFromPhenotype(u16 *basePalette, u16 species, bool8 isFemale, u8 phenotype, u16 *outputPalette, u16 *tag);
 struct CompressedSpritePalette GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality, u8 phenotype);
 bool32 IsHMMove2(u16 move);
 bool8 IsMonSpriteNotFlipped(u16 species);

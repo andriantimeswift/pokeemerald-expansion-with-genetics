@@ -2702,3 +2702,31 @@ const struct CompressedSpriteSheet gMonBackPicSpecialTraitTable[] =
     SPECIES_SPRITE(ENAMORUS_THERIAN, gMonBackPicSpecialTrait_CircledQuestionMark), //gMonBackPicSpecialTrait_EnamorusTherian),
 #endif
 };
+
+const struct CompressedSpriteSheet gMonBackPicSpecialTraitTableFemale[] =
+{
+    SPECIES_SPRITE(EEVEE, gMonBackPicSpecialTrait_EeveeF),
+#if P_GEN_4_POKEMON == TRUE
+    SPECIES_SPRITE(STARLY, gMonBackPicSpecialTrait_StarlyF),
+    SPECIES_SPRITE(STARAVIA, gMonBackPicSpecialTrait_StaraviaF),
+    SPECIES_SPRITE(STARAPTOR, gMonBackPicSpecialTrait_Staraptor),
+    SPECIES_SPRITE(BIDOOF, gMonBackPicSpecialTrait_BidoofF),
+    SPECIES_SPRITE(KRICKETOT, gMonBackPicSpecialTrait_KricketotF),
+    SPECIES_SPRITE(KRICKETUNE, gMonBackPicSpecialTrait_KricketuneF),
+    SPECIES_SPRITE(SHINX, gMonBackPicSpecialTrait_ShinxF),
+    SPECIES_SPRITE(COMBEE, gMonBackPicSpecialTrait_Combee),
+    SPECIES_SPRITE(HIPPOPOTAS, gMonBackPicSpecialTrait_HippopotasF),
+    SPECIES_SPRITE(HIPPOWDON, gMonBackPicSpecialTrait_HippowdonF),
+#endif
+#if P_GEN_5_POKEMON == TRUE
+    SPECIES_SPRITE(UNFEZANT, gMonBackPicSpecialTrait_UnfezantF),
+    SPECIES_SPRITE(FRILLISH, gMonBackPicSpecialTrait_FrillishF),
+    SPECIES_SPRITE(JELLICENT, gMonBackPicSpecialTrait_JellicentF),
+#endif
+#if P_GEN_6_POKEMON == TRUE
+    SPECIES_SPRITE(PYROAR, gMonBackPicSpecialTrait_PyroarF),
+#endif
+#if P_GEN_8_POKEMON == TRUE
+    SPECIES_SPRITE(BASCULEGION, gMonBackPicSpecialTrait_CircledQuestionMark), //gMonBackPicSpecialTrait_BasculegionF),
+#endif
+};

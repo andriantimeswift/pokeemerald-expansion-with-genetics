@@ -7939,7 +7939,7 @@ const u32 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, u32 otId, u32 p
     }
     LZDecompressWram(pal, decompressedPal);
 
-    GetMonPaletteFromPhenotype(decompressedPal, species, phenotype, tempPal, 0);
+    GetMonPaletteFromPhenotype(decompressedPal, species, ShouldShowFemaleDifferences(species, personality), phenotype, tempPal, 0);
 
     pal = CompressSpritePalette(tempPal);
     return pal;
@@ -8011,7 +8011,7 @@ u32 *CompressSpritePalette(const u16 data[16])
     //output = &csp;
 }
 
-void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, u8 phenotype, u16 outputPalette[], u16 *tag)
+void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, u8 phenotype, u16 outputPalette[], u16 *tag)
 {
     u16 pal[16];
     u16 albinoPal[16];
@@ -8028,18 +8028,38 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, u8 phenotype, u1
 
     if (IsShinyPhenotype(phenotype))
     {
-        LZDecompressWram(gMonAlbinoShinyPaletteTable[species].data, albinoPal);
-        LZDecompressWram(gMonMelanisticShinyPaletteTable[species].data, melanisticPal);
-        albinoTag = (u16 *) &gMonAlbinoShinyPaletteTable[species].tag;
-        melanisticTag = (u16 *) &gMonMelanisticShinyPaletteTable[species].tag;
+        if (isFemale)
+        {
+            LZDecompressWram(gMonAlbinoShinyPaletteTableFemale[species].data, albinoPal);
+            LZDecompressWram(gMonMelanisticShinyPaletteTableFemale[species].data, melanisticPal);
+            albinoTag = (u16 *) &gMonAlbinoShinyPaletteTableFemale[species].tag;
+            melanisticTag = (u16 *) &gMonMelanisticShinyPaletteTableFemale[species].tag;
+        }
+        else
+        {
+            LZDecompressWram(gMonAlbinoShinyPaletteTable[species].data, albinoPal);
+            LZDecompressWram(gMonMelanisticShinyPaletteTable[species].data, melanisticPal);
+            albinoTag = (u16 *) &gMonAlbinoShinyPaletteTable[species].tag;
+            melanisticTag = (u16 *) &gMonMelanisticShinyPaletteTable[species].tag;
+        }
         DebugPrintf("Shiny!", 0);
     }
     else
     {
-        LZDecompressWram(gMonAlbinoPaletteTable[species].data, albinoPal);
-        LZDecompressWram(gMonMelanisticPaletteTable[species].data, melanisticPal);
-        albinoTag = (u16 *) &gMonAlbinoPaletteTable[species].tag;
-        melanisticTag = (u16 *) &gMonMelanisticPaletteTable[species].tag;
+        if (isFemale)
+        {
+            LZDecompressWram(gMonAlbinoPaletteTableFemale[species].data, albinoPal);
+            LZDecompressWram(gMonMelanisticPaletteTableFemale[species].data, melanisticPal);
+            albinoTag = (u16 *) &gMonAlbinoPaletteTableFemale[species].tag;
+            melanisticTag = (u16 *) &gMonMelanisticPaletteTableFemale[species].tag;
+        }
+        else
+        {
+            LZDecompressWram(gMonAlbinoPaletteTable[species].data, albinoPal);
+            LZDecompressWram(gMonMelanisticPaletteTable[species].data, melanisticPal);
+            albinoTag = (u16 *) &gMonAlbinoPaletteTable[species].tag;
+            melanisticTag = (u16 *) &gMonMelanisticPaletteTable[species].tag;
+        }
     }
 
     if (((phenotype >> ALBINO_GENE_INDEX) & 1) && !((phenotype >> ALBINO_FADE_GENE_INDEX) & 1))
@@ -8105,12 +8125,18 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, u8 phenotype, u1
         }
         if (phenotype >> ALT_PATTERN_ALT_COLOR_GENE_INDEX)
         {
-            LZDecompressWram(gMonAltPatternAltColorPaletteTable[species].data, tempPal);
+            if (isFemale)
+                LZDecompressWram(gMonAltPatternAltColorPaletteTableFemale[species].data, tempPal);
+            else
+                LZDecompressWram(gMonAltPatternAltColorPaletteTable[species].data, tempPal);
             DebugPrintf("Alt Pattern!", 0);
         }
         else
         {
-            LZDecompressWram(gMonAltPatternPaletteTable[species].data, tempPal);
+            if(isFemale)
+                LZDecompressWram(gMonAltPatternPaletteTableFemale[species].data, tempPal);
+            else
+                LZDecompressWram(gMonAltPatternPaletteTable[species].data, tempPal);
             DebugPrintf("Alt Pattern Alt Color!", 0);
         }
 
@@ -8151,7 +8177,7 @@ struct CompressedSpritePalette GetMonSpritePalStructFromOtIdPersonality(u16 spec
 
     LZDecompressWram(pal.data, decompressedPal);
     newPal.tag = pal.tag;
-    GetMonPaletteFromPhenotype(decompressedPal, species, phenotype, tempPal, &newPal.tag);
+    GetMonPaletteFromPhenotype(decompressedPal, species, ShouldShowFemaleDifferences(species, personality), phenotype, tempPal, &newPal.tag);
     newPal.data = CompressSpritePalette(tempPal);
     pal = newPal;
     return pal;

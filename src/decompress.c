@@ -71,7 +71,10 @@ void DecompressPicFromTable(const struct CompressedSpriteSheet *src, void *buffe
 void DecompressPicFromTableGender(void* buffer, s32 species, u32 personality, u8 phenotype)
 {
     if (ShouldShowFemaleDifferences(species, personality))
-        DecompressPicFromTable(&gMonFrontPicTableFemale[species], buffer, species);
+        if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
+            DecompressPicFromTable(&gMonFrontPicSpecialTraitTableFemale[species], buffer, species);
+        else
+            DecompressPicFromTable(&gMonFrontPicTableFemale[species], buffer, species);
     else
         if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
         {
@@ -114,9 +117,17 @@ void LoadSpecialPokePic(void *dest, s32 species, u32 personality, bool8 isFrontP
     else if (ShouldShowFemaleDifferences(species, personality))
     {
         if (isFrontPic)
-            LZ77UnCompWram(gMonFrontPicTableFemale[species].data, dest);
+        {
+            if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
+                LZ77UnCompWram(gMonFrontPicSpecialTraitTableFemale[species].data, dest);
+            else
+                LZ77UnCompWram(gMonFrontPicTableFemale[species].data, dest);
+        }
         else
-            LZ77UnCompWram(gMonBackPicTableFemale[species].data, dest);
+            if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
+                LZ77UnCompWram(gMonBackPicSpecialTraitTableFemale[species].data, dest);
+            else
+                LZ77UnCompWram(gMonBackPicTableFemale[species].data, dest);
     }
     else
     {

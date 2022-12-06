@@ -7946,13 +7946,13 @@ const u32 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, u32 otId, u32 p
     //THIS IS THE PALETTE FUNCTION
 }
 
-struct CompressedSpritePalette GetMonSpritePalStruct(struct Pokemon *mon)
+void GetMonSpritePalStruct(struct Pokemon *mon, struct CompressedSpritePalette *pal)
 {
     u16 species = GetMonData(mon, MON_DATA_SPECIES2, 0);
     u32 otId = GetMonData(mon, MON_DATA_OT_ID, 0);
     u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, 0);
     u8 phenotype = GetMonData(mon, MON_DATA_PHENOTYPE, 0);
-    return GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype);
+    GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype, pal);
 }
 
 //Returns a new palette which is the result of alpha blending foreground over background. Coeff must be between 0 and 16.
@@ -8048,7 +8048,7 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, u8 phenotype, u1
         {
             pal[i] = albinoPal[i];
         }
-        *tag = albinoTag;
+        tag = albinoTag;
         DebugPrintf("Albino!", 0);
     }
 
@@ -8058,13 +8058,13 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, u8 phenotype, u1
         {
             pal[i] = melanisticPal[i];
         }
-        *tag = melanisticTag;
+        tag = melanisticTag;
         DebugPrintf("Melanistic!", 0);
     }
 
     if ((phenotype >> ALBINO_GENE_INDEX) && (phenotype >> ALBINO_FADE_GENE_INDEX))
     {
-        *tag = albinoTag;
+        tag = albinoTag;
         if (phenotype >> MELANISTIC_GENE_INDEX)
         {
             if (phenotype >> MELANISTIC_FADE_GENE_INDEX)
@@ -8088,7 +8088,7 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, u8 phenotype, u1
 
     if ((phenotype >> MELANISTIC_GENE_INDEX) && (phenotype >> MELANISTIC_FADE_GENE_INDEX))
     {
-        *tag = melanisticTag;
+        tag = melanisticTag;
         if (!(phenotype >> ALBINO_GENE_INDEX))
         {
             AlphaBlendPalettes(basePalette, melanisticPal, 8, pal);
@@ -8123,38 +8123,36 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, u8 phenotype, u1
     }
 }
 
-struct CompressedSpritePalette GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality, u8 phenotype)
+void GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality, u8 phenotype, struct CompressedSpritePalette *pal)
 {
     u32 shinyValue;
     u16 decompressedPal[16];
-    struct CompressedSpritePalette pal;
     static u16 tempPal[16];
     u32 i;
-    struct CompressedSpritePalette newPal;
+    static struct CompressedSpritePalette newPal;
 
 
     shinyValue = GET_SHINY_VALUE(otId, personality);
     if (shinyValue < SHINY_ODDS)
     {
         if (ShouldShowFemaleDifferences(species, personality))
-            pal = gMonShinyPaletteTableFemale[species];
+            *pal = gMonShinyPaletteTableFemale[species];
         else
-            pal = gMonShinyPaletteTable[species];
+            *pal = gMonShinyPaletteTable[species];
     }
     else
     {
         if (ShouldShowFemaleDifferences(species, personality))
-            pal = gMonPaletteTableFemale[species];
+            *pal = gMonPaletteTableFemale[species];
         else
-            pal = gMonPaletteTable[species];
+            *pal = gMonPaletteTable[species];
     }
 
-    LZDecompressWram(pal.data, decompressedPal);
-    newPal.tag = pal.tag;
+    LZDecompressWram(pal->data, decompressedPal);
+    newPal.tag = pal->tag;
     GetMonPaletteFromPhenotype(decompressedPal, species, phenotype, tempPal, &newPal.tag);
     newPal.data = CompressSpritePalette(tempPal);
-    pal = newPal;
-    return pal;
+    pal = &newPal;
     //THIS IS THE PALETTE FUNCTION?
 
 }

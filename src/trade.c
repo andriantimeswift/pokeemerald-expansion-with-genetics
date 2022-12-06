@@ -2755,14 +2755,14 @@ static void LoadTradeMonPic(u8 whichParty, u8 state)
 
         HandleLoadSpecialPokePic(TRUE, gMonSpritesGfxPtr->sprites.ptr[whichParty * 2 + B_POSITION_OPPONENT_LEFT], species, personality, phenotype);
 
-        palette = GetMonSpritePalStruct(mon);
+        GetMonSpritePalStruct(mon, &palette);
         LoadCompressedSpritePalette(&palette);
         sTradeData->monSpecies[whichParty] = species;
         sTradeData->monPersonalities[whichParty] = personality;
         sTradeData->monPhenotypes[whichParty] = phenotype;
         break;
     case 1:
-        palette = GetMonSpritePalStruct(mon);
+        GetMonSpritePalStruct(mon, &palette);
         SetMultiuseSpriteTemplateToPokemon(palette.tag, pos);
         sTradeData->monSpriteIds[whichParty] = CreateSprite(&gMultiuseSpriteTemplate, 120, 60, 6);
         gSprites[sTradeData->monSpriteIds[whichParty]].invisible = TRUE;

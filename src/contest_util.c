@@ -900,7 +900,7 @@ static void Task_ShowWinnerMonBanner(u8 taskId)
                                 species,
                                 personality, phenotype);
 
-        tempPal = GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype);
+        GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype, &tempPal);
         pokePal = &tempPal;
         LoadCompressedSpritePalette(pokePal);
         SetMultiuseSpriteTemplateToPokemon(species, B_POSITION_OPPONENT_LEFT);
@@ -2580,7 +2580,7 @@ void ShowContestEntryMonPic(void)
         gTasks[taskId].data[1] = species;
         HandleLoadSpecialPokePic(TRUE, gMonSpritesGfxPtr->sprites.ptr[B_POSITION_OPPONENT_LEFT], species, personality, phenotype);
 
-        tempPal = GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype);
+        GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype, &tempPal);
         palette = &tempPal;
         LoadCompressedSpritePalette(palette);
         SetMultiuseSpriteTemplateToPokemon(species, B_POSITION_OPPONENT_LEFT);

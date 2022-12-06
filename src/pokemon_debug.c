@@ -1183,9 +1183,10 @@ void CB2_Debug_Pokemon(void)
             palette = GetMonSpritePalStructCustom(species, data->isFemale, data->isShiny);
             LoadCompressedSpritePalette(palette);
             //Front
-            HandleLoadSpecialPokePic(TRUE, gMonSpritesGfxPtr->sprites.ptr[1], species, (data->isFemale ? FEMALE_PERSONALITY : MALE_PERSONALITY));
+            HandleLoadSpecialPokePic(TRUE, gMonSpritesGfxPtr->sprites.ptr[1], species, (data->isFemale ? FEMALE_PERSONALITY : MALE_PERSONALITY), data->phenotype); //I don't know what kind of data is being stored in data, so I don't know if data->phenotype exists.
             data->isShiny = FALSE;
             data->isFemale = FALSE;
+            data->phenotype = 0; //this is the phenoytpe of a normal Pokemon.
             BattleLoadOpponentMonSpriteGfxCustom(species, data->isFemale, data->isShiny, 1);
             SetMultiuseSpriteTemplateToPokemon(species, 1);
             gMultiuseSpriteTemplate.paletteTag = palette->tag;
@@ -1198,7 +1199,7 @@ void CB2_Debug_Pokemon(void)
             LoadAndCreateEnemyShadowSpriteCustom(data, species);
 
             //Back
-            HandleLoadSpecialPokePic(FALSE, gMonSpritesGfxPtr->sprites.ptr[2], species, (data->isFemale ? FEMALE_PERSONALITY : MALE_PERSONALITY));
+            HandleLoadSpecialPokePic(FALSE, gMonSpritesGfxPtr->sprites.ptr[2], species, (data->isFemale ? FEMALE_PERSONALITY : MALE_PERSONALITY), data->phenotype); //I don't know what kind of data is being stored in data, so I don't know if data->phenotype exists.
             BattleLoadOpponentMonSpriteGfxCustom(species, data->isFemale, data->isShiny, 4);
             SetMultiuseSpriteTemplateToPokemon(species, 2);
             offset_y = gMonBackPicCoords[species].y_offset;
@@ -1695,7 +1696,7 @@ static void ReloadPokemonSprites(struct PokemonDebugMenu *data)
     palette = GetMonSpritePalStructCustom(species, data->isFemale, data->isShiny);
     LoadCompressedSpritePalette(palette);
     //Front
-    HandleLoadSpecialPokePic(TRUE, gMonSpritesGfxPtr->sprites.ptr[1], species, (data->isFemale ? FEMALE_PERSONALITY : MALE_PERSONALITY));
+    HandleLoadSpecialPokePic(TRUE, gMonSpritesGfxPtr->sprites.ptr[1], species, (data->isFemale ? FEMALE_PERSONALITY : MALE_PERSONALITY), data->phenotype);
     BattleLoadOpponentMonSpriteGfxCustom(species, data->isFemale, data->isShiny, 1);
     SetMultiuseSpriteTemplateToPokemon(species, 1);
     gMultiuseSpriteTemplate.paletteTag = palette->tag;
@@ -1708,7 +1709,7 @@ static void ReloadPokemonSprites(struct PokemonDebugMenu *data)
     LoadAndCreateEnemyShadowSpriteCustom(data, species);
 
     //Back
-    HandleLoadSpecialPokePic(FALSE, gMonSpritesGfxPtr->sprites.ptr[2], species, (data->isFemale ? FEMALE_PERSONALITY : MALE_PERSONALITY));
+    HandleLoadSpecialPokePic(FALSE, gMonSpritesGfxPtr->sprites.ptr[2], species, (data->isFemale ? FEMALE_PERSONALITY : MALE_PERSONALITY), data->phenotype); //I don't know what is in data, so I don't know if data->phenotype even exists.
     BattleLoadOpponentMonSpriteGfxCustom(species, data->isFemale, data->isShiny, 5);
     SetMultiuseSpriteTemplateToPokemon(species, 2);
     offset_y = gMonBackPicCoords[species].y_offset;

@@ -880,7 +880,9 @@ static void Task_ShowWinnerMonBanner(u8 taskId)
     u16 species;
     u32 otId;
     u32 personality;
+    u8 phenotype;
     const struct CompressedSpritePalette *pokePal;
+    struct CompressedSpritePalette tempPal;
 
     switch (gTasks[taskId].tState)
     {
@@ -892,12 +894,14 @@ static void Task_ShowWinnerMonBanner(u8 taskId)
         species = gContestMons[i].species;
         personality = gContestMons[i].personality;
         otId = gContestMons[i].otId;
+        phenotype = gContestMons[i].phenotype;
         HandleLoadSpecialPokePic(TRUE,
                                 gMonSpritesGfxPtr->sprites.ptr[B_POSITION_OPPONENT_LEFT],
                                 species,
-                                personality);
+                                personality, phenotype);
 
-        pokePal = GetMonSpritePalStructFromOtIdPersonality(species, otId, personality);
+        tempPal = GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype);
+        pokePal = &tempPal;
         LoadCompressedSpritePalette(pokePal);
         SetMultiuseSpriteTemplateToPokemon(species, B_POSITION_OPPONENT_LEFT);
         gMultiuseSpriteTemplate.paletteTag = pokePal->tag;
@@ -2554,11 +2558,13 @@ bool8 IsContestDebugActive(void)
 void ShowContestEntryMonPic(void)
 {
     const struct CompressedSpritePalette *palette;
+    struct CompressedSpritePalette tempPal;
     u32 personality, otId;
     u16 species;
     u8 spriteId;
     u8 taskId;
     u8 left, top;
+    u8 phenotype;
 
     if (FindTaskIdByFunc(Task_ShowContestEntryMonPic) == TASK_NONE)
     {
@@ -2568,12 +2574,14 @@ void ShowContestEntryMonPic(void)
         species = gContestMons[gSpecialVar_0x8006].species;
         personality = gContestMons[gSpecialVar_0x8006].personality;
         otId = gContestMons[gSpecialVar_0x8006].otId;
+        phenotype = gContestMons[gSpecialVar_0x8006].phenotype;
         taskId = CreateTask(Task_ShowContestEntryMonPic, 0x50);
         gTasks[taskId].data[0] = 0;
         gTasks[taskId].data[1] = species;
-        HandleLoadSpecialPokePic(TRUE, gMonSpritesGfxPtr->sprites.ptr[B_POSITION_OPPONENT_LEFT], species, personality);
+        HandleLoadSpecialPokePic(TRUE, gMonSpritesGfxPtr->sprites.ptr[B_POSITION_OPPONENT_LEFT], species, personality, phenotype);
 
-        palette = GetMonSpritePalStructFromOtIdPersonality(species, otId, personality);
+        tempPal = GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype);
+        palette = &tempPal;
         LoadCompressedSpritePalette(palette);
         SetMultiuseSpriteTemplateToPokemon(species, B_POSITION_OPPONENT_LEFT);
         gMultiuseSpriteTemplate.paletteTag = palette->tag;

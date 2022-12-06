@@ -715,6 +715,7 @@ struct ContestWinner
     u8 monName[POKEMON_NAME_LENGTH + 1];
     u8 trainerName[PLAYER_NAME_LENGTH + 1];
     u8 contestRank;
+    u8 phenotype;
 };
 
 struct Mail

@@ -68,29 +68,44 @@ void DecompressPicFromTable(const struct CompressedSpriteSheet *src, void *buffe
         LZ77UnCompWram(src->data, buffer);
 }
 
-void DecompressPicFromTableGender(void* buffer, s32 species, u32 personality)
+void DecompressPicFromTableGender(void* buffer, s32 species, u32 personality, u8 phenotype)
 {
     if (ShouldShowFemaleDifferences(species, personality))
-        DecompressPicFromTable(&gMonFrontPicTableFemale[species], buffer, species);
+        if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
+            DecompressPicFromTable(&gMonFrontPicSpecialTraitTableFemale[species], buffer, species);
+        else
+            DecompressPicFromTable(&gMonFrontPicTableFemale[species], buffer, species);
     else
-        DecompressPicFromTable(&gMonFrontPicTable[species], buffer, species);
+        if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
+        {
+            DecompressPicFromTable(&gMonFrontPicSpecialTraitTable[species], buffer, species);
+            DebugPrintf("Special Trait!", 0);
+        }
+        else
+            DecompressPicFromTable(&gMonFrontPicTable[species], buffer, species);
 }
 
-void HandleLoadSpecialPokePic(bool32 isFrontPic, void *dest, s32 species, u32 personality)
+void HandleLoadSpecialPokePic(bool32 isFrontPic, void *dest, s32 species, u32 personality, u8 phenotype)
 {
-    LoadSpecialPokePic(dest, species, personality, isFrontPic);
+    LoadSpecialPokePic(dest, species, personality, isFrontPic, phenotype);
 }
 
-void LoadSpecialPokePic(void *dest, s32 species, u32 personality, bool8 isFrontPic)
+void LoadSpecialPokePic(void *dest, s32 species, u32 personality, bool8 isFrontPic, u8 phenotype)
 {
     if (species == SPECIES_UNOWN)
     {
         u32 id = GetUnownSpeciesId(personality);
 
-        if (!isFrontPic)
-            LZ77UnCompWram(gMonBackPicTable[id].data, dest);
+         if (isFrontPic)
+            if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
+                LZ77UnCompWram(gMonFrontPicSpecialTraitTable[id].data, dest);
+            else
+                LZ77UnCompWram(gMonFrontPicTable[id].data, dest);
         else
-            LZ77UnCompWram(gMonFrontPicTable[id].data, dest);
+            if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
+                LZ77UnCompWram(gMonBackPicSpecialTraitTable[id].data, dest);
+            else
+                LZ77UnCompWram(gMonBackPicTable[id].data, dest);
     }
     else if (species > NUM_SPECIES) // is species unknown? draw the ? icon
     {
@@ -102,16 +117,36 @@ void LoadSpecialPokePic(void *dest, s32 species, u32 personality, bool8 isFrontP
     else if (ShouldShowFemaleDifferences(species, personality))
     {
         if (isFrontPic)
-            LZ77UnCompWram(gMonFrontPicTableFemale[species].data, dest);
+        {
+            if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
+                LZ77UnCompWram(gMonFrontPicSpecialTraitTableFemale[species].data, dest);
+            else
+                LZ77UnCompWram(gMonFrontPicTableFemale[species].data, dest);
+        }
         else
-            LZ77UnCompWram(gMonBackPicTableFemale[species].data, dest);
+            if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
+                LZ77UnCompWram(gMonBackPicSpecialTraitTableFemale[species].data, dest);
+            else
+                LZ77UnCompWram(gMonBackPicTableFemale[species].data, dest);
     }
     else
     {
         if (isFrontPic)
-            LZ77UnCompWram(gMonFrontPicTable[species].data, dest);
+            if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
+            {
+                LZ77UnCompWram(gMonFrontPicSpecialTraitTable[species].data, dest);
+                DebugPrintf("Special Trait!", 0);
+            }
+            else
+                LZ77UnCompWram(gMonFrontPicTable[species].data, dest);
         else
-            LZ77UnCompWram(gMonBackPicTable[species].data, dest);
+            if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
+            {
+                LZ77UnCompWram(gMonBackPicSpecialTraitTable[species].data, dest);
+                DebugPrintf("Special Trait!", 0);
+            }
+            else
+                LZ77UnCompWram(gMonBackPicTable[species].data, dest);
     }
 
     DrawSpindaSpots(species, personality, dest, isFrontPic);

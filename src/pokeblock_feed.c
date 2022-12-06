@@ -739,7 +739,7 @@ static bool8 LoadMonAndSceneGfx(struct Pokemon *mon)
         personality = GetMonData(mon, MON_DATA_PERSONALITY);
         trainerId = GetMonData(mon, MON_DATA_OT_ID);
         phenotype = GetMonData(mon, MON_DATA_PHENOTYPE);
-        GetMonSpritePalStructFromOtIdPersonality(species, trainerId, personality, phenotype, &tempPal);
+        tempPal = GetMonSpritePalStructFromOtIdPersonality(species, trainerId, personality, phenotype);
         palette = &tempPal;
 
         LoadCompressedSpritePalette(palette);

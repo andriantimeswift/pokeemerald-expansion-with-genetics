@@ -4015,7 +4015,7 @@ static u8 LoadMonGfxAndSprite(struct Pokemon *mon, s16 *state)
         (*state)++;
         return 0xFF;
     case 1:
-        GetMonSpritePalStructFromOtIdPersonality(summary->species2, summary->OTID, summary->pid, GetMonData(mon, MON_DATA_PHENOTYPE), &tempPal);
+        tempPal = GetMonSpritePalStructFromOtIdPersonality(summary->species2, summary->OTID, summary->pid, GetMonData(mon, MON_DATA_PHENOTYPE));
         pal = &tempPal;
         LoadCompressedSpritePalette(pal);
         SetMultiuseSpriteTemplateToPokemon(pal->tag, B_POSITION_OPPONENT_LEFT);

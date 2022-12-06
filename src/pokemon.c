@@ -3416,15 +3416,37 @@ void ZeroEnemyPartyMons(void)
     for (i = 0; i < PARTY_SIZE; i++)
         ZeroMonData(&gEnemyParty[i]);
 }
+u32 UPow(u32 a, u32 b)
+{
+    u32 output = 1;
+    u32 i;
 
-u32 Mutate(u32 genome, u32 probability)
+    for(i = 0; i < b; i++)
+    {
+        output = output * a;
+    }
+    return output;
+}
+
+u32 IntToBinary (u8 num)
+{
+    u32 output = 0;
+    u32 i;
+    for (i = 0; i < 8; i++)
+    {
+        output = output + (((num >> i) & 1) * UPow(10, i));
+    }
+    return output;
+}
+
+u8 Mutate(u8 genome, u16 probability)
 {
     u32 i;
-    u32 output = genome;
+    u8 output = genome;
     for (i = 0; i < 8; i++)
     {
         if (Random() < probability)
-            output ^= (1 << i);
+            output ^= 1 << i;
     }
     return output;
 }
@@ -3474,6 +3496,8 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     u8 i;
     u8 availableIVs[NUM_STATS];
     u8 selectedIvs[LEGENDARY_PERFECT_IV_COUNT];
+    DebugPrintf("Input Genes 1: %d", IntToBinary(genes1));
+    DebugPrintf("Input Genes 2: %d", IntToBinary(genes2));
 
     ZeroBoxMonData(boxMon);
 
@@ -3511,8 +3535,8 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
 
         if (gBaseStats[species].flags & SPECIES_FLAG_SHINY_LOCKED)
         {
-            genes1 &= 0 << SHINY_GENE_INDEX;
-            genes2 &= 0 << SHINY_GENE_INDEX;
+            genes1 &= ~(1 << SHINY_GENE_INDEX);
+            genes2 &= ~(1 << SHINY_GENE_INDEX);
         }
         else
         {
@@ -3525,23 +3549,35 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
 
             
         }
-        if(IsShinyPhenotype(genes1 & genes2))
+        if (! hasFixedPersonality)
         {
-            personality = GetShinyPersonality(value);
-        }
-        else
-        {
-            personality = GetNonShinyPersonality(value);
+            if(IsShinyPhenotype(genes1 & genes2))
+            {
+                personality = GetShinyPersonality(value);
+            }
+            else
+            {
+                personality = GetNonShinyPersonality(value);
+            }
         }
     }
+
+    DebugPrintf("Mid Genes 1: %d", IntToBinary(genes1));
+    DebugPrintf("Mid Genes 2: %d", IntToBinary(genes2));
 
     if (hasFixedPersonality)
     {
         personality = fixedPersonality;
+        
         if(IsShinyOtIdPersonality(value, personality))
         {
             genes1 |= 1 << SHINY_GENE_INDEX;
             genes2 |= 1 << SHINY_GENE_INDEX;
+        }
+        else
+        {
+            if(IsShinyPhenotype (genes1 & genes2))
+                genes1 &= ~(1 << SHINY_GENE_INDEX); //set one shiny gene bit to 0            
         }
     }
 
@@ -3660,7 +3696,11 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     }
 
     GiveBoxMonInitialMoveset(boxMon);
-}
+
+    DebugPrintf("Output Genes1: %d", IntToBinary(genes1));
+    DebugPrintf("Output Genes2: %d", IntToBinary(genes2));
+    DebugPrintf("Output Phenotype: %d", IntToBinary(GetBoxMonData(boxMon, MON_DATA_PHENOTYPE)));
+    }
 
 void CreateMonWithNature(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 nature, u8 genes1, u8 genes2)
 {
@@ -5117,7 +5157,7 @@ u32 GetBoxMonData(struct BoxPokemon *boxMon, s32 field, u8 *data)
         retVal = substruct0->genes2;  
         break;  
     case MON_DATA_PHENOTYPE:
-        retVal = substruct0->genes1 & substruct0->genes2;  
+        retVal = (substruct0->genes1 & substruct0->genes2);  
         break;
     default:
         break;
@@ -7869,7 +7909,7 @@ const u32 *GetMonFrontSpritePal(struct Pokemon *mon)
     u16 species = GetMonData(mon, MON_DATA_SPECIES2, 0);
     u32 otId = GetMonData(mon, MON_DATA_OT_ID, 0);
     u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, 0);
-    u8 phenotype = GetMonData(mon, MON_DATA_PERSONALITY, 0);
+    u8 phenotype = GetMonData(mon, MON_DATA_PHENOTYPE, 0);
     return GetMonSpritePalFromSpeciesAndPersonality(species, otId, personality, phenotype);
 }
 
@@ -7879,7 +7919,6 @@ const u32 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, u32 otId, u32 p
     static const u32 *pal;
     u16 decompressedPal[16];
     u16 tempPal[16];
-
     if (species > NUM_SPECIES)
         pal = gMonPaletteTable[SPECIES_NONE].data;
 
@@ -7936,7 +7975,7 @@ void ModifyPalette(u16 basePalette[16], u16 modifierPalette[16], u16 outputPalet
     u32 i;
     for (i = 0; i < 16; i++)
     {
-        if ((u16) modifierPalette[i] != 0)
+        if (modifierPalette[i] != 0)
             outputPalette[i] = modifierPalette[i];
         else
             outputPalette[i] = basePalette[i];
@@ -7972,66 +8011,63 @@ u32 *CompressSpritePalette(const u16 data[16])
     //output = &csp;
 }
 
-bool8 ArraysAreSame(u16 array1[], u16 array2[], u32 size)
-{
-    u32 i;
-    for(i = 0; i < size; i++)
-    {
-        if(array1[i] != array2[i])
-        {
-            DebugPrintf("%d, %d", array1[i], array2[i]);
-            return FALSE;
-        }
-    }
-    return TRUE;
-}
-
 void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, u8 phenotype, u16 outputPalette[], u16 *tag)
 {
     u16 pal[16];
     u16 albinoPal[16];
+    u16 albinoTag;
     u16 melanisticPal[16];
+    u16 melanisticTag;
+    u16 tempPal[16];
+    u16 palCopy[16];
     u32 i;
     for(i = 0; i < 16; i++)
     {
         pal[i] = basePalette[i];
     }
 
-    if ((phenotype >> SHINY_GENE_INDEX) & 1)
+    if (IsShinyPhenotype(phenotype))
     {
         LZDecompressWram(gMonAlbinoShinyPaletteTable[species].data, albinoPal);
         LZDecompressWram(gMonMelanisticShinyPaletteTable[species].data, melanisticPal);
+        albinoTag = gMonAlbinoShinyPaletteTable[species].tag;
+        melanisticTag = gMonMelanisticShinyPaletteTable[species].tag;
         DebugPrintf("Shiny!", 0);
     }
     else
     {
         LZDecompressWram(gMonAlbinoPaletteTable[species].data, albinoPal);
         LZDecompressWram(gMonMelanisticPaletteTable[species].data, melanisticPal);
+        albinoTag = gMonAlbinoPaletteTable[species].tag;
+        melanisticTag = gMonMelanisticPaletteTable[species].tag;
     }
 
-    if (((phenotype >> ALBINO_GENE_INDEX) & 1) && ((phenotype >> ALBINO_FADE_GENE_INDEX) & 0))
+    if ((phenotype >> ALBINO_GENE_INDEX) && !(phenotype >> ALBINO_FADE_GENE_INDEX))
     {
         for(i = 0; i < 16; i++)
         {
             pal[i] = albinoPal[i];
         }
+        tag = albinoTag;
         DebugPrintf("Albino!", 0);
     }
 
-    if (((phenotype >> MELANISTIC_GENE_INDEX) & 1) && ((phenotype >> MELANISTIC_FADE_GENE_INDEX) & 0))
+    if ((phenotype >> MELANISTIC_GENE_INDEX) && !(phenotype >> MELANISTIC_FADE_GENE_INDEX))
     {
         for(i = 0; i < 16; i++)
         {
             pal[i] = melanisticPal[i];
-            DebugPrintf("Melanistic!", 0);
         }
+        tag = melanisticTag;
+        DebugPrintf("Melanistic!", 0);
     }
 
-    if (((phenotype >> ALBINO_GENE_INDEX) & 1) && ((phenotype >> ALBINO_FADE_GENE_INDEX) & 1))
+    if ((phenotype >> ALBINO_GENE_INDEX) && (phenotype >> ALBINO_FADE_GENE_INDEX))
     {
-        if ((phenotype >> MELANISTIC_GENE_INDEX) & 1)
+        tag = albinoTag;
+        if (phenotype >> MELANISTIC_GENE_INDEX)
         {
-            if ((phenotype >> MELANISTIC_FADE_GENE_INDEX) & 1)
+            if (phenotype >> MELANISTIC_FADE_GENE_INDEX)
             {
                 DebugPrintf("Albino Fade Melanistic Fade!", 0);
                 AlphaBlendPalettes(basePalette, albinoPal, 8, pal);
@@ -8050,41 +8086,36 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, u8 phenotype, u1
         }
     }
 
-    if (((phenotype >> MELANISTIC_GENE_INDEX) & 1) && ((phenotype >> MELANISTIC_FADE_GENE_INDEX) & 1))
+    if ((phenotype >> MELANISTIC_GENE_INDEX) && (phenotype >> MELANISTIC_FADE_GENE_INDEX))
     {
-        if ((phenotype >> ALBINO_GENE_INDEX) & 1)
-        {
-            if ((phenotype >> ALBINO_FADE_GENE_INDEX) & 1)
-            {
-                AlphaBlendPalettes(basePalette, melanisticPal, 8, pal);
-                AlphaBlendPalettes(pal, albinoPal, 8, pal);
-                DebugPrintf("Melanistic Fade Albino Fade!", 0);
-            }
-        }
-        else
+        tag = melanisticTag;
+        if (!(phenotype >> ALBINO_GENE_INDEX))
         {
             AlphaBlendPalettes(basePalette, melanisticPal, 8, pal);
             DebugPrintf("Melanistic Fade Albino!", 0);
         }
     }
 
-    /*if ((phenotype >> ALT_PATTERN_GENE_INDEX) & 1)
+    if (phenotype >> ALT_PATTERN_GENE_INDEX)
     {
-        u16 tempPal[16];
-        u16 palCopy[16];
-        CpuCopy32(tempPal, pal, 16);
-        CpuCopy32(palCopy, pal, 16);
-        if ((phenotype >> ALT_PATTERN_ALT_COLOR_GENE_INDEX) & 1)
+        
+        for(i = 0; i < 16; i++)
+        {
+            palCopy[i] = pal[i];
+        }
+        if (phenotype >> ALT_PATTERN_ALT_COLOR_GENE_INDEX)
         {
             LZDecompressWram(gMonAltPatternAltColorPaletteTable[species].data, tempPal);
+            DebugPrintf("Alt Pattern!", 0);
         }
         else
         {
             LZDecompressWram(gMonAltPatternPaletteTable[species].data, tempPal);
+            DebugPrintf("Alt Pattern Alt Color!", 0);
         }
 
         ModifyPalette(palCopy, tempPal, pal);
-    }*/
+    }
 
     for(i = 0; i < 16; i++)
     {

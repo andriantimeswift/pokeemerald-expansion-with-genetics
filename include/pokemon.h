@@ -106,16 +106,17 @@ enum {
     MON_DATA_NATURE,
 };
 
-enum{
-    SHINY_GENE_INDEX,
-    ALBINO_GENE_INDEX,
-    MELANISTIC_GENE_INDEX,
-    ALT_PATTERN_GENE_INDEX,
-    ALT_PATTERN_ALT_COLOR_GENE_INDEX,
-    SPECIAL_TRAIT_GENE_INDEX,
-    ALBINO_FADE_GENE_INDEX,
-    MELANISTIC_FADE_GENE_INDEX
-};
+//Gene index constants for reading/writing particular gene values.
+
+#define SHINY_GENE_INDEX 0
+#define ALBINO_GENE_INDEX 1
+#define MELANISTIC_GENE_INDEX 2
+#define ALT_PATTERN_GENE_INDEX 3
+#define ALT_PATTERN_ALT_COLOR_GENE_INDEX 4
+#define SPECIAL_TRAIT_GENE_INDEX 5
+#define ALBINO_FADE_GENE_INDEX 6
+#define MELANISTIC_FADE_GENE_INDEX 7
+
 
 struct PokemonSubstruct0
 {
@@ -431,7 +432,7 @@ void ZeroBoxMonData(struct BoxPokemon *boxMon);
 void ZeroMonData(struct Pokemon *mon);
 void ZeroPlayerPartyMons(void);
 void ZeroEnemyPartyMons(void);
-u32 Mutate (u32 genome, u32 probability);
+u8 Mutate (u8 genome, u16 probability);
 u32 GetShinyPersonality(u32 otId);
 u32 GetNonShinyPersonality(u32 otId);
 void CreateMon(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 hasFixedPersonality, u32 fixedPersonality, u8 otIdType, u32 fixedOtId, u8 genes1, u8 genes2);

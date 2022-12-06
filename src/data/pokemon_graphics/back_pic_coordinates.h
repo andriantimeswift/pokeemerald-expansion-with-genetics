@@ -1039,21 +1039,77 @@ const struct MonCoords gMonBackPicCoords[] =
 #endif
     // Misc Forms
     // Cosplay Pikachu
-    [SPECIES_PIKACHU_COSPLAY]              = PIKACHU_BACK_PIC_COORDS,
-    [SPECIES_PIKACHU_ROCK_STAR]            = PIKACHU_BACK_PIC_COORDS,
-    [SPECIES_PIKACHU_BELLE]                = PIKACHU_BACK_PIC_COORDS,
-    [SPECIES_PIKACHU_POP_STAR]             = PIKACHU_BACK_PIC_COORDS,
-    [SPECIES_PIKACHU_PH_D]                 = PIKACHU_BACK_PIC_COORDS,
-    [SPECIES_PIKACHU_LIBRE]                = PIKACHU_BACK_PIC_COORDS,
+    [SPECIES_PIKACHU_COSPLAY] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
+    [SPECIES_PIKACHU_ROCK_STAR] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
+    [SPECIES_PIKACHU_BELLE] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
+    [SPECIES_PIKACHU_POP_STAR] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
+    [SPECIES_PIKACHU_PH_D] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
+    [SPECIES_PIKACHU_LIBRE] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
     // Cap Pikachu
-    [SPECIES_PIKACHU_ORIGINAL_CAP]         = PIKACHU_BACK_PIC_COORDS,
-    [SPECIES_PIKACHU_HOENN_CAP]            = PIKACHU_BACK_PIC_COORDS,
-    [SPECIES_PIKACHU_SINNOH_CAP]           = PIKACHU_BACK_PIC_COORDS,
-    [SPECIES_PIKACHU_UNOVA_CAP]            = PIKACHU_BACK_PIC_COORDS,
-    [SPECIES_PIKACHU_KALOS_CAP]            = PIKACHU_BACK_PIC_COORDS,
-    [SPECIES_PIKACHU_ALOLA_CAP]            = PIKACHU_BACK_PIC_COORDS,
-    [SPECIES_PIKACHU_PARTNER_CAP]          = PIKACHU_BACK_PIC_COORDS,
-    [SPECIES_PIKACHU_WORLD_CAP]            = PIKACHU_BACK_PIC_COORDS,
+    [SPECIES_PIKACHU_ORIGINAL_CAP] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
+    [SPECIES_PIKACHU_HOENN_CAP] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
+    [SPECIES_PIKACHU_SINNOH_CAP] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
+    [SPECIES_PIKACHU_UNOVA_CAP] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
+    [SPECIES_PIKACHU_KALOS_CAP] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
+    [SPECIES_PIKACHU_ALOLA_CAP] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
+    [SPECIES_PIKACHU_PARTNER_CAP] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
+    [SPECIES_PIKACHU_WORLD_CAP] =
+    {
+        .size = MON_COORDS_SIZE(64, 56),
+        .y_offset = 4,
+    },
     // Pichu
     [SPECIES_PICHU_SPIKY_EARED]            = { .size = MON_COORDS_SIZE(48, 56), .y_offset =  8 },
     // Unown

@@ -17,7 +17,7 @@ void LoadCompressedSpritePaletteOverrideBuffer(const struct CompressedSpritePale
 bool8 LoadCompressedSpritePaletteUsingHeap(const struct CompressedSpritePalette *src);
 
 void DecompressPicFromTable(const struct CompressedSpriteSheet *src, void *buffer, s32 species);
-void DecompressPicFromTableGender(void* buffer, s32 species, u32 personality);
+void DecompressPicFromTableGender(void* buffer, s32 species, u32 personality, u8 phenotype);
 
 void HandleLoadSpecialPokePic(bool32 isFrontPic, void *dest, s32 species, u32 personality, u8 phenotype);
 

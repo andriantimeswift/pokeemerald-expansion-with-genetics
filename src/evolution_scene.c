@@ -264,8 +264,9 @@ void EvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, bool8 canStopEvo, u
     phenotype = GetMonData(mon, MON_DATA_PHENOTYPE);
     DecompressPicFromTableGender(gMonSpritesGfxPtr->sprites.ptr[B_POSITION_OPPONENT_LEFT],
                                 currSpecies,
-                                personality);
-    GetMonSpritePalStructFromOtIdPersonality(currSpecies, trainerId, personality, phenotype, &tempPal);                            
+                                personality,
+                                phenotype);
+    tempPal = GetMonSpritePalStructFromOtIdPersonality(currSpecies, trainerId, personality, phenotype);                            
     pokePal = &tempPal;
     LoadCompressedPalette(pokePal->data, 0x110, 0x20);
 
@@ -280,9 +281,10 @@ void EvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, bool8 canStopEvo, u
     // postEvo sprite
     DecompressPicFromTableGender(gMonSpritesGfxPtr->sprites.ptr[B_POSITION_OPPONENT_RIGHT],
                                 postEvoSpecies,
-                                personality);
+                                personality,
+                                phenotype);
 
-    GetMonSpritePalStructFromOtIdPersonality(postEvoSpecies, trainerId, personality, phenotype, &tempPal);
+    tempPal = GetMonSpritePalStructFromOtIdPersonality(postEvoSpecies, trainerId, personality, phenotype);
     pokePal = &tempPal;
     LoadCompressedPalette(pokePal->data, 0x120, 0x20);
 
@@ -362,8 +364,9 @@ static void CB2_EvolutionSceneLoadGraphics(void)
 
     DecompressPicFromTableGender(gMonSpritesGfxPtr->sprites.ptr[B_POSITION_OPPONENT_RIGHT],
                                 postEvoSpecies,
-                                personality);
-    GetMonSpritePalStructFromOtIdPersonality(postEvoSpecies, trainerId, personality, phenotype, &tempPal);
+                                personality,
+                                phenotype);
+    tempPal = GetMonSpritePalStructFromOtIdPersonality(postEvoSpecies, trainerId, personality, phenotype);
     pokePal = &tempPal;
 
     LoadCompressedPalette(pokePal->data, 0x120, 0x20);
@@ -437,8 +440,9 @@ static void CB2_TradeEvolutionSceneLoadGraphics(void)
             u32 phenotype = GetMonData(mon, MON_DATA_PHENOTYPE);
             DecompressPicFromTableGender(gMonSpritesGfxPtr->sprites.ptr[B_POSITION_OPPONENT_RIGHT],
                                         postEvoSpecies,
-                                        personality);
-            GetMonSpritePalStructFromOtIdPersonality(postEvoSpecies, trainerId, personality, phenotype, &tempPal);
+                                        personality,
+                                        phenotype);
+            tempPal = GetMonSpritePalStructFromOtIdPersonality(postEvoSpecies, trainerId, personality, phenotype);
             pokePal = &tempPal;
             LoadCompressedPalette(pokePal->data, 0x120, 0x20);
             gMain.state++;
@@ -504,9 +508,10 @@ void TradeEvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, u8 preEvoSprit
 
     DecompressPicFromTableGender(gMonSpritesGfxPtr->sprites.ptr[B_POSITION_OPPONENT_LEFT],
                                 postEvoSpecies,
-                                personality);
+                                personality,
+                                phenotype);
 
-    GetMonSpritePalStructFromOtIdPersonality(postEvoSpecies, trainerId, personality, phenotype, &tempPal);
+    tempPal = GetMonSpritePalStructFromOtIdPersonality(postEvoSpecies, trainerId, personality, phenotype);
     pokePal = &tempPal;
     LoadCompressedPalette(pokePal->data, 0x120, 0x20);
 

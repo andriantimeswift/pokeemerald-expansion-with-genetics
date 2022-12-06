@@ -137,6 +137,8 @@ extern const u8 gEnemyMonElevation[NUM_SPECIES];
 extern const union AnimCmd *const *const gMonFrontAnimsPtrTable[];
 extern const struct CompressedSpriteSheet gMonFrontPicTable[];
 extern const struct CompressedSpriteSheet gMonFrontPicTableFemale[];
+extern const struct CompressedSpriteSheet gMonFrontPicSpecialTraitTableFemale[];
+extern const struct CompressedSpriteSheet gMonFrontPicSpecialTraitTable[];
 
 extern const struct Trainer gTrainers[];
 extern const u8 gTrainerClassNames[][13];

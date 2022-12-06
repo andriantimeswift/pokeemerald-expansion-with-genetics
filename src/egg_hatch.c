@@ -453,14 +453,14 @@ static u8 EggHatchCreateMonSprite(u8 useAlt, u8 state, u8 partyId, u16 *speciesL
             HandleLoadSpecialPokePic(TRUE,
                                      gMonSpritesGfxPtr->sprites.ptr[(useAlt * 2) + B_POSITION_OPPONENT_LEFT],
                                      species, pid, phenotype);
-            GetMonSpritePalStruct(mon, &palette);
+            palette = GetMonSpritePalStruct(mon);
             LoadCompressedSpritePalette(&palette);
             *speciesLoc = species;
         }
         break;
     case 1:
         // Create mon sprite
-        GetMonSpritePalStruct(mon, &palette);
+        palette = GetMonSpritePalStruct(mon);
         SetMultiuseSpriteTemplateToPokemon(palette.tag, position);
         spriteId = CreateSprite(&gMultiuseSpriteTemplate, EGG_X, EGG_Y, 6);
         gSprites[spriteId].invisible = TRUE;

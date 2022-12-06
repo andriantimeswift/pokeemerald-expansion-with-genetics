@@ -89,7 +89,7 @@ static void LoadPicPaletteByTagOrSlot(u16 species, u32 otId, u32 personality, u8
         else
         {
             sCreatingSpriteTemplate.paletteTag = paletteTag;
-            GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype, &tempPal);
+            tempPal = GetMonSpritePalStructFromOtIdPersonality(species, otId, personality, phenotype);
             LoadCompressedSpritePalette(&tempPal);
         }
     }

@@ -1083,7 +1083,7 @@ void GetConditionMenuMonGfx(void *tilesDst, void *palDst, u16 boxId, u16 monId, 
         u32 *compressedPalette;
 
         LoadSpecialPokePic(tilesDst, species, personality, TRUE, phenotype);
-        GetMonSpritePalFromSpeciesAndPersonality(species, trainerId, personality, phenotype);
+        compressedPalette = GetMonSpritePalFromSpeciesAndPersonality(species, trainerId, personality, phenotype);
         LZ77UnCompWram(compressedPalette, palDst);
     }
 }

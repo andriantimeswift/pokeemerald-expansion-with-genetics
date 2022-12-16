@@ -3496,8 +3496,6 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     u8 i;
     u8 availableIVs[NUM_STATS];
     u8 selectedIvs[LEGENDARY_PERFECT_IV_COUNT];
-    DebugPrintf("Input Genes 1: %d", IntToBinary(genes1));
-    DebugPrintf("Input Genes 2: %d", IntToBinary(genes2));
 
     ZeroBoxMonData(boxMon);
 
@@ -3561,9 +3559,6 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
             }
         }
     }
-
-    DebugPrintf("Mid Genes 1: %d", IntToBinary(genes1));
-    DebugPrintf("Mid Genes 2: %d", IntToBinary(genes2));
 
     if (hasFixedPersonality)
     {
@@ -3696,10 +3691,6 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     }
 
     GiveBoxMonInitialMoveset(boxMon);
-
-    DebugPrintf("Output Genes1: %d", IntToBinary(genes1));
-    DebugPrintf("Output Genes2: %d", IntToBinary(genes2));
-    DebugPrintf("Output Phenotype: %d", IntToBinary(GetBoxMonData(boxMon, MON_DATA_PHENOTYPE)));
     }
 
 void CreateMonWithNature(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 nature, u8 genes1, u8 genes2)
@@ -8042,7 +8033,6 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
             albinoTag = (u16 *) &gMonAlbinoShinyPaletteTable[species].tag;
             melanisticTag = (u16 *) &gMonMelanisticShinyPaletteTable[species].tag;
         }
-        DebugPrintf("Shiny!", 0);
     }
     else
     {
@@ -8069,7 +8059,6 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
             pal[i] = albinoPal[i];
         }
         tag = albinoTag;
-        DebugPrintf("Albino!", 0);
     }
 
     if (((phenotype >> MELANISTIC_GENE_INDEX) & 1) && !((phenotype >> MELANISTIC_FADE_GENE_INDEX) & 1))
@@ -8079,7 +8068,6 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
             pal[i] = melanisticPal[i];
         }
         tag = melanisticTag;
-        DebugPrintf("Melanistic!", 0);
     }
 
     if (((phenotype >> ALBINO_GENE_INDEX) & 1) && ((phenotype >> ALBINO_FADE_GENE_INDEX) & 1))
@@ -8089,20 +8077,17 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
         {
             if (phenotype >> MELANISTIC_FADE_GENE_INDEX)
             {
-                DebugPrintf("Albino Fade Melanistic Fade!", 0);
                 AlphaBlendPalettes(basePalette, albinoPal, 8, pal);
                 AlphaBlendPalettes(pal, melanisticPal, 8, pal);
             }
             else
             {
                 AlphaBlendPalettes(melanisticPal, albinoPal, 8, pal);
-                DebugPrintf("Albino Fade Melanistic!", 0);
             }
         }
         else
         {
             AlphaBlendPalettes(basePalette, albinoPal, 8, pal);
-            DebugPrintf("Albino Fade!", 0);
         }
     }
 
@@ -8112,7 +8097,6 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
         if (!(phenotype >> ALBINO_GENE_INDEX))
         {
             AlphaBlendPalettes(basePalette, melanisticPal, 8, pal);
-            DebugPrintf("Melanistic Fade Albino!", 0);
         }
     }
 
@@ -8129,7 +8113,6 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
                 LZDecompressWram(gMonAltPatternAltColorPaletteTableFemale[species].data, tempPal);
             else
                 LZDecompressWram(gMonAltPatternAltColorPaletteTable[species].data, tempPal);
-            DebugPrintf("Alt Pattern!", 0);
         }
         else
         {
@@ -8137,7 +8120,6 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
                 LZDecompressWram(gMonAltPatternPaletteTableFemale[species].data, tempPal);
             else
                 LZDecompressWram(gMonAltPatternPaletteTable[species].data, tempPal);
-            DebugPrintf("Alt Pattern Alt Color!", 0);
         }
 
         ModifyPalette(palCopy, tempPal, pal);

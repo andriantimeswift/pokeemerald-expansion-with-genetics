@@ -7908,8 +7908,22 @@ const u32 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, u32 otId, u32 p
 {
     u32 shinyValue;
     static const u32 *pal;
-    u16 decompressedPal[16];
-    u16 tempPal[16];
+    u16 *decompressedPal;
+    u16 *tempPal;
+    u32 palSize = 16;
+
+    if (species == SPECIES_CASTFORM)
+    {
+        palSize = 16 * NUM_CASTFORM_FORMS;
+    }
+    else if (species == SPECIES_CHERRIM)
+    {
+        palSize = 16 * NUM_CHERRIM_FORMS;
+    }
+    
+    decompressedPal = Alloc(palSize * sizeof(u16));
+    tempPal = Alloc(palSize * sizeof(u16));
+
     if (species > NUM_SPECIES)
         pal = gMonPaletteTable[SPECIES_NONE].data;
 
@@ -7947,11 +7961,11 @@ struct CompressedSpritePalette GetMonSpritePalStruct(struct Pokemon *mon)
 }
 
 //Returns a new palette which is the result of alpha blending foreground over background. Coeff must be between 0 and 16.
-void AlphaBlendPalettes(u16 basePalette[16], u16 modifierPalette[16], u32 coeff, u16 outputPalette[16])
+void AlphaBlendPalettes(u16 *basePalette, u16 *modifierPalette, u32 coeff, u16 *outputPalette, u32 paletteSize)
 {
     u32 coeffMax = 16;
     u32 i;
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < paletteSize; i++)
     {
         struct PlttData *background = (struct PlttData *)&basePalette[i];
         struct PlttData *foreground = (struct PlttData *)&modifierPalette[i];
@@ -7961,10 +7975,10 @@ void AlphaBlendPalettes(u16 basePalette[16], u16 modifierPalette[16], u32 coeff,
     } 
 }
 
-void ModifyPalette(u16 basePalette[16], u16 modifierPalette[16], u16 outputPalette[16])
+void ModifyPalette(u16 *basePalette, u16 *modifierPalette, u16 *outputPalette, u32 paletteSize)
 {
     u32 i;
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < paletteSize; i++)
     {
         if (modifierPalette[i] != 0)
             outputPalette[i] = modifierPalette[i];
@@ -7974,7 +7988,7 @@ void ModifyPalette(u16 basePalette[16], u16 modifierPalette[16], u16 outputPalet
 }
 
 // WARNING: You'll want to load the returned palette before you call CompressSpritePalette again, else you'll get weird results.
-u32 *CompressSpritePalette(const u16 data[16])
+u32 *CompressSpritePalette(const u16 *data)
 {
     static EWRAM_DATA u32 *csp;
     static EWRAM_DATA u32 buffer[40 / sizeof(u32)];
@@ -8004,15 +8018,32 @@ u32 *CompressSpritePalette(const u16 data[16])
 
 void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, u8 phenotype, u16 outputPalette[], u16 *tag)
 {
-    u16 pal[16];
-    u16 albinoPal[16];
+    u16 *pal;
+    u16 *albinoPal;
     u16 *albinoTag;
-    u16 melanisticPal[16];
+    u16 *melanisticPal;
     u16 *melanisticTag;
-    u16 tempPal[16];
-    u16 palCopy[16];
+    u16 *tempPal;
+    u16 *palCopy;
     u32 i;
-    for(i = 0; i < 16; i++)
+    u32 palSize = 16;
+
+    if (species == SPECIES_CASTFORM)
+    {
+        palSize = 16 * NUM_CASTFORM_FORMS;
+    }
+    else if (species == SPECIES_CHERRIM)
+    {
+        palSize = 16 * NUM_CHERRIM_FORMS;
+    }
+
+    pal = Alloc(palSize * sizeof(u16));
+    albinoPal = Alloc(palSize * sizeof(u16));
+    melanisticPal = Alloc(palSize * sizeof(u16));
+    tempPal = Alloc(palSize * sizeof(u16));
+    palCopy = Alloc(palSize * sizeof(u16));
+
+    for(i = 0; i < palSize; i++)
     {
         pal[i] = basePalette[i];
     }
@@ -8054,7 +8085,7 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
 
     if (((phenotype >> ALBINO_GENE_INDEX) & 1) && !((phenotype >> ALBINO_FADE_GENE_INDEX) & 1))
     {
-        for(i = 0; i < 16; i++)
+        for(i = 0; i < palSize; i++)
         {
             pal[i] = albinoPal[i];
         }
@@ -8063,7 +8094,7 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
 
     if (((phenotype >> MELANISTIC_GENE_INDEX) & 1) && !((phenotype >> MELANISTIC_FADE_GENE_INDEX) & 1))
     {
-        for(i = 0; i < 16; i++)
+        for(i = 0; i < palSize; i++)
         {
             pal[i] = melanisticPal[i];
         }
@@ -8077,17 +8108,17 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
         {
             if (phenotype >> MELANISTIC_FADE_GENE_INDEX)
             {
-                AlphaBlendPalettes(basePalette, albinoPal, 8, pal);
-                AlphaBlendPalettes(pal, melanisticPal, 8, pal);
+                AlphaBlendPalettes(basePalette, albinoPal, 8, pal, palSize);
+                AlphaBlendPalettes(pal, melanisticPal, 8, pal, palSize);
             }
             else
             {
-                AlphaBlendPalettes(melanisticPal, albinoPal, 8, pal);
+                AlphaBlendPalettes(melanisticPal, albinoPal, 8, pal, palSize);
             }
         }
         else
         {
-            AlphaBlendPalettes(basePalette, albinoPal, 8, pal);
+            AlphaBlendPalettes(basePalette, albinoPal, 8, pal, palSize);
         }
     }
 
@@ -8096,14 +8127,14 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
         tag = melanisticTag;
         if (!(phenotype >> ALBINO_GENE_INDEX))
         {
-            AlphaBlendPalettes(basePalette, melanisticPal, 8, pal);
+            AlphaBlendPalettes(basePalette, melanisticPal, 8, pal, palSize);
         }
     }
 
     if ((phenotype >> ALT_PATTERN_GENE_INDEX) & 1)
     {
         
-        for(i = 0; i < 16; i++)
+        for(i = 0; i < palSize; i++)
         {
             palCopy[i] = pal[i];
         }
@@ -8122,10 +8153,10 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
                 LZDecompressWram(gMonAltPatternPaletteTable[species].data, tempPal);
         }
 
-        ModifyPalette(palCopy, tempPal, pal);
+        ModifyPalette(palCopy, tempPal, pal, palSize);
     }
 
-    for(i = 0; i < 16; i++)
+    for(i = 0; i < palSize; i++)
     {
         outputPalette[i] = pal[i];
     }

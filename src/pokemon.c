@@ -7947,8 +7947,9 @@ const u32 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, u32 otId, u32 p
     GetMonPaletteFromPhenotype(decompressedPal, species, ShouldShowFemaleDifferences(species, personality), phenotype, tempPal, 0);
 
     pal = CompressSpritePalette(tempPal);
+    Free(decompressedPal);
+    Free(tempPal);
     return pal;
-    //THIS IS THE PALETTE FUNCTION
 }
 
 struct CompressedSpritePalette GetMonSpritePalStruct(struct Pokemon *mon)
@@ -8162,15 +8163,27 @@ void GetMonPaletteFromPhenotype(u16 basePalette[], u16 species, bool8 isFemale, 
     }
 }
 
-struct CompressedSpritePalette GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId , u32 personality, u8 phenotype)
+struct CompressedSpritePalette GetMonSpritePalStructFromOtIdPersonality(u16 species, u32 otId, u32 personality, u8 phenotype)
 {
     u32 shinyValue;
-    u16 decompressedPal[16];
+    u16 *decompressedPal;
     struct CompressedSpritePalette pal;
-    static u16 tempPal[16];
+    u16 *tempPal;
     u32 i;
+    u32 palSize = 16;
     struct CompressedSpritePalette newPal;
 
+    if (species == SPECIES_CASTFORM)
+    {
+        palSize = 16 * NUM_CASTFORM_FORMS;
+    }
+    else if (species == SPECIES_CHERRIM)
+    {
+        palSize = 16 * NUM_CHERRIM_FORMS;
+    }
+    
+    decompressedPal = Alloc(palSize * sizeof(u16));
+    tempPal = Alloc(palSize * sizeof(u16));
 
     shinyValue = GET_SHINY_VALUE(otId, personality);
     if (shinyValue < SHINY_ODDS)
@@ -8193,9 +8206,58 @@ struct CompressedSpritePalette GetMonSpritePalStructFromOtIdPersonality(u16 spec
     GetMonPaletteFromPhenotype(decompressedPal, species, ShouldShowFemaleDifferences(species, personality), phenotype, tempPal, &newPal.tag);
     newPal.data = CompressSpritePalette(tempPal);
     pal = newPal;
+    Free(decompressedPal);
+    Free(tempPal);
     return pal;
-    //THIS IS THE PALETTE FUNCTION?
+}
 
+struct CompressedSpritePalette GetMonSpritePalStructFromPhenotype(u16 species, bool8 isFemale, u8 phenotype)
+{
+    u32 shinyValue;
+    u16 *decompressedPal;
+    struct CompressedSpritePalette pal;
+    u16 *tempPal;
+    u32 i;
+    u32 palSize = 16;
+    struct CompressedSpritePalette newPal;
+
+    if (species == SPECIES_CASTFORM)
+    {
+        palSize = 16 * NUM_CASTFORM_FORMS;
+    }
+    else if (species == SPECIES_CHERRIM)
+    {
+        palSize = 16 * NUM_CHERRIM_FORMS;
+    }
+    
+    decompressedPal = Alloc(palSize * sizeof(u16));
+    tempPal = Alloc(palSize * sizeof(u16));
+
+
+    shinyValue = IsShinyPhenotype(phenotype);
+    if (shinyValue)
+    {
+        if (isFemale)
+            pal = gMonShinyPaletteTableFemale[species];
+        else
+            pal = gMonShinyPaletteTable[species];
+    }
+    else
+    {
+        if (isFemale)
+            pal = gMonPaletteTableFemale[species];
+        else
+            pal = gMonPaletteTable[species];
+    }
+
+    LZDecompressWram(pal.data, decompressedPal);
+    newPal.tag = pal.tag;
+    GetMonPaletteFromPhenotype(decompressedPal, species, isFemale, phenotype, tempPal, &newPal.tag);
+    newPal.data = CompressSpritePalette(tempPal);
+    pal = newPal;
+    Free(decompressedPal);
+    Free(tempPal);
+    return pal;
 }
 
 bool32 IsHMMove2(u16 move)

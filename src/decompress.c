@@ -79,7 +79,6 @@ void DecompressPicFromTableGender(void* buffer, s32 species, u32 personality, u8
         if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
         {
             DecompressPicFromTable(&gMonFrontPicSpecialTraitTable[species], buffer, species);
-            DebugPrintf("Special Trait!", 0);
         }
         else
             DecompressPicFromTable(&gMonFrontPicTable[species], buffer, species);
@@ -135,7 +134,6 @@ void LoadSpecialPokePic(void *dest, s32 species, u32 personality, bool8 isFrontP
             if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
             {
                 LZ77UnCompWram(gMonFrontPicSpecialTraitTable[species].data, dest);
-                DebugPrintf("Special Trait!", 0);
             }
             else
                 LZ77UnCompWram(gMonFrontPicTable[species].data, dest);
@@ -143,7 +141,6 @@ void LoadSpecialPokePic(void *dest, s32 species, u32 personality, bool8 isFrontP
             if ((phenotype >> SPECIAL_TRAIT_GENE_INDEX) & 1)
             {
                 LZ77UnCompWram(gMonBackPicSpecialTraitTable[species].data, dest);
-                DebugPrintf("Special Trait!", 0);
             }
             else
                 LZ77UnCompWram(gMonBackPicTable[species].data, dest);

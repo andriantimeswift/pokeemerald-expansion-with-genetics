@@ -409,6 +409,7 @@
 
 #define CHERRIM_OVERCAST  0
 #define CHERRIM_SUNSHINE  1
+#define NUM_CHERRIM_FORMS 2
 
 #define CASTFORM_NORMAL     0
 #define CASTFORM_FIRE       1
